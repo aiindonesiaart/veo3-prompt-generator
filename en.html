@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veo 3 Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#1E40AF',
+                        accent: '#60A5FA',
+                        dark: '#1F2937',
+                        light: '#F3F4F6'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            min-height: 100vh;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-field {
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .section-title {
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 24px;
+            background: #3B82F6;
+            border-radius: 2px;
+        }
+
+        .template-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .template-card:hover {
+            transform: translateY(-4px);
+            border-color: #3B82F6;
+        }
+
+        #generatedPrompt {
+            transition: all 0.3s ease;
+        }
+
+        #generatedPrompt::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        #generatedPrompt::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        #generatedPrompt::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        #generatedPrompt::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Add responsive styles */
+        @media (max-width: 1024px) {
+            .lg\:sticky {
+                position: relative;
+                top: 0;
+            }
+            
+            .lg\:w-\[500px\] {
+                width: 100%;
+            }
+        }
+
+        /* Improve scrollbar styling */
+        #generatedPrompt::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #generatedPrompt::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        #generatedPrompt::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        #generatedPrompt::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Add smooth transition for sticky positioning */
+        .lg\:sticky {
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <div class="text-center mb-12 animate-fade-in">
+            <h1 class="text-5xl font-bold text-dark mb-4">Veo 3 Video Prompt Generator</h1>
+            <p class="text-gray-600 text-lg">Create amazing video prompts with ease</p>
+        </div>
+        
+        <!-- AMSTAM Advertisement Banner -->
+        <div class="max-w-7xl mx-auto mb-8">
+            <a href="https://amstream.live" target="_blank" class="block bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-bold mb-2">Want 24/7 Non-Stop Livestreaming Without Data Quota?</h2>
+                        <p class="text-lg opacity-90">Visit AMSTREAM now, Click Here!</p>
+                    </div>
+                    <div class="ml-4">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
+            <!-- Form Section -->
+            <div class="flex-1 card rounded-xl p-8">
+                <form id="promptForm" class="space-y-8">
+                    <!-- 1. Subject and Action Details -->
+                    <div class="bg-light/50 p-6 rounded-lg">
+                        <h2 class="text-xl font-semibold text-dark mb-4 section-title">1. Subject and Action Details</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Main Subject -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Main Subject</label>
+                                <input type="text" id="subject" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field" placeholder="Example: A professional athlete running on a track">
+                            </div>
+
+                            <!-- Subject Characteristics -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Subject Characteristics</label>
+                                <select id="subjectCharacteristics" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <optgroup label="Market & Trade">
+                                        <option value="friendly traditional market trader">Friendly Traditional Market Trader</option>
+                                        <option value="persistent street vendor">Persistent Street Vendor</option>
+                                        <option value="cheerful coffee stall owner">Cheerful Coffee Stall Owner</option>
+                                        <option value="enthusiastic traditional food seller">Enthusiastic Traditional Food Seller</option>
+                                        <option value="friendly fruit vendor">Friendly Fruit Vendor</option>
+                                        <option value="tough fish seller">Tough Fish Seller</option>
+                                        <option value="diligent vegetable seller">Diligent Vegetable Seller</option>
+                                        <option value="meticulous spice seller">Meticulous Spice Seller</option>
+                                    </optgroup>
+                                    <optgroup label="Agriculture & Plantation">
+                                        <option value="diligent rice farmer">Diligent Rice Farmer</option>
+                                        <option value="meticulous vegetable farmer">Meticulous Vegetable Farmer</option>
+                                        <option value="patient fruit farmer">Patient Fruit Farmer</option>
+                                        <option value="dedicated coffee farmer">Dedicated Coffee Farmer</option>
+                                        <option value="careful tea farmer">Careful Tea Farmer</option>
+                                        <option value="attentive spice farmer">Attentive Spice Farmer</option>
+                                        <option value="innovative organic farmer">Innovative Organic Farmer</option>
+                                        <option value="modern hydroponic farmer">Modern Hydroponic Farmer</option>
+                                    </optgroup>
+                                    <optgroup label="Crafts & Traditional Arts">
+                                        <option value="meticulous batik artisan">Meticulous Batik Artisan</option>
+                                        <option value="patient wood carver">Patient Wood Carver</option>
+                                        <option value="careful ceramic artisan">Careful Ceramic Artisan</option>
+                                        <option value="diligent silver artisan">Diligent Silver Artisan</option>
+                                        <option value="meticulous weaver">Meticulous Weaver</option>
+                                        <option value="detailed textile artisan">Detailed Textile Artisan</option>
+                                        <option value="creative puppet maker">Creative Puppet Maker</option>
+                                        <option value="careful songket weaver">Careful Songket Weaver</option>
+                                    </optgroup>
+                                    <optgroup label="Culinary & Food">
+                                        <option value="skilled traditional chef">Skilled Traditional Chef</option>
+                                        <option value="friendly satay seller">Friendly Satay Seller</option>
+                                        <option value="cheerful meatball seller">Cheerful Meatball Seller</option>
+                                        <option value="agile fried rice seller">Agile Fried Rice Seller</option>
+                                        <option value="diligent martabak seller">Diligent Martabak Seller</option>
+                                        <option value="friendly cendol seller">Friendly Cendol Seller</option>
+                                        <option value="persistent fritter seller">Persistent Fritter Seller</option>
+                                        <option value="cheerful rujak seller">Cheerful Rujak Seller</option>
+                                    </optgroup>
+                                    <optgroup label="Transportation">
+                                        <option value="friendly becak driver">Friendly Becak Driver</option>
+                                        <option value="tough motorcycle taxi driver">Tough Motorcycle Taxi Driver</option>
+                                        <option value="cheerful minibus driver">Cheerful Minibus Driver</option>
+                                        <option value="patient horse cart driver">Patient Horse Cart Driver</option>
+                                        <option value="brave boatman">Brave Boatman</option>
+                                        <option value="persistent cart pusher">Persistent Cart Pusher</option>
+                                        <option value="strong porter">Strong Porter</option>
+                                        <option value="diligent wheelbarrow pusher">Diligent Wheelbarrow Pusher</option>
+                                    </optgroup>
+                                    <optgroup label="Education & Teaching">
+                                        <option value="patient Quran teacher">Patient Quran Teacher</option>
+                                        <option value="careful recitation teacher">Careful Recitation Teacher</option>
+                                        <option value="firm martial arts teacher">Firm Martial Arts Teacher</option>
+                                        <option value="graceful traditional dance teacher">Graceful Traditional Dance Teacher</option>
+                                        <option value="meticulous gamelan teacher">Meticulous Gamelan Teacher</option>
+                                        <option value="wise puppet master">Wise Puppet Master</option>
+                                        <option value="careful batik teacher">Careful Batik Teacher</option>
+                                        <option value="creative craft teacher">Creative Craft Teacher</option>
+                                    </optgroup>
+                                    <optgroup label="Health & Medicine">
+                                        <option value="wise traditional healer">Wise Traditional Healer</option>
+                                        <option value="patient midwife">Patient Midwife</option>
+                                        <option value="careful masseuse">Careful Masseuse</option>
+                                        <option value="skilled chiropractor">Skilled Chiropractor</option>
+                                        <option value="meticulous cupping therapist">Meticulous Cupping Therapist</option>
+                                        <option value="careful herbal medicine maker">Careful Herbal Medicine Maker</option>
+                                        <option value="patient acupuncturist">Patient Acupuncturist</option>
+                                        <option value="careful reflexologist">Careful Reflexologist</option>
+                                    </optgroup>
+                                    <optgroup label="Carpentry & Construction">
+                                        <option value="meticulous carpenter">Meticulous Carpenter</option>
+                                        <option value="strong mason">Strong Mason</option>
+                                        <option value="brave roofer">Brave Roofer</option>
+                                        <option value="careful electrician">Careful Electrician</option>
+                                        <option value="diligent plumber">Diligent Plumber</option>
+                                        <option value="meticulous painter">Meticulous Painter</option>
+                                        <option value="tough welder">Tough Welder</option>
+                                        <option value="patient wood carver">Patient Wood Carver</option>
+                                    </optgroup>
+                                    <optgroup label="Fishery & Marine">
+                                        <option value="tough traditional fisherman">Tough Traditional Fisherman</option>
+                                        <option value="brave net fisherman">Brave Net Fisherman</option>
+                                        <option value="patient angler">Patient Angler</option>
+                                        <option value="diligent fish farmer">Diligent Fish Farmer</option>
+                                        <option value="meticulous shrimp farmer">Meticulous Shrimp Farmer</option>
+                                        <option value="diligent seaweed farmer">Diligent Seaweed Farmer</option>
+                                        <option value="careful seafood processor">Careful Seafood Processor</option>
+                                        <option value="friendly seafood seller">Friendly Seafood Seller</option>
+                                    </optgroup>
+                                    <optgroup label="Arts & Entertainment">
+                                        <option value="wise puppet master">Wise Puppet Master</option>
+                                        <option value="graceful traditional dancer">Graceful Traditional Dancer</option>
+                                        <option value="meticulous gamelan player">Meticulous Gamelan Player</option>
+                                        <option value="cheerful angklung player">Cheerful Angklung Player</option>
+                                        <option value="patient flute player">Patient Flute Player</option>
+                                        <option value="energetic kendang player">Energetic Kendang Player</option>
+                                        <option value="enthusiastic rebana player">Enthusiastic Rebana Player</option>
+                                        <option value="calm kecapi player">Calm Kecapi Player</option>
+                                    </optgroup>
+                                    <optgroup label="TV Hosts & Presenters">
+                                        <option value="interactive talk show host">Interactive Talk Show Host</option>
+                                        <option value="energetic quiz show host">Energetic Quiz Show Host</option>
+                                        <option value="dynamic music show host">Dynamic Music Show Host</option>
+                                        <option value="cheerful variety show host">Cheerful Variety Show Host</option>
+                                        <option value="natural reality show host">Natural Reality Show Host</option>
+                                        <option value="informative documentary host">Informative Documentary Host</option>
+                                        <option value="friendly cooking show host">Friendly Cooking Show Host</option>
+                                        <option value="enthusiastic travel show host">Enthusiastic Travel Show Host</option>
+                                        <option value="elegant lifestyle host">Elegant Lifestyle Host</option>
+                                        <option value="energetic sports host">Energetic Sports Host</option>
+                                        <option value="professional news anchor">Professional News Anchor</option>
+                                        <option value="wise senior news anchor">Wise Senior News Anchor</option>
+                                        <option value="dynamic young news anchor">Dynamic Young News Anchor</option>
+                                        <option value="energetic sports news anchor">Energetic Sports News Anchor</option>
+                                        <option value="careful economic news anchor">Careful Economic News Anchor</option>
+                                        <option value="cheerful entertainment news anchor">Cheerful Entertainment News Anchor</option>
+                                        <option value="serious political news anchor">Serious Political News Anchor</option>
+                                        <option value="informative tech news anchor">Informative Tech News Anchor</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Main Action -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Main Action</label>
+                                <select id="mainAction" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <optgroup label="Market Activities">
+                                        <option value="selling goods friendly">Selling Goods Friendly</option>
+                                        <option value="bargaining cleverly">Bargaining Cleverly</option>
+                                        <option value="arranging merchandise neatly">Arranging Merchandise Neatly</option>
+                                        <option value="serving customers politely">Serving Customers Politely</option>
+                                        <option value="calling customers loudly">Calling Customers Loudly</option>
+                                    </optgroup>
+                                    <optgroup label="Farming Activities">
+                                        <option value="digging diligently">Digging Diligently</option>
+                                        <option value="planting rice carefully">Planting Rice Carefully</option>
+                                        <option value="harvesting crops cheerfully">Harvesting Crops Cheerfully</option>
+                                        <option value="irrigating fields meticulously">Irrigating Fields Meticulously</option>
+                                        <option value="tending plants patiently">Tending Plants Patiently</option>
+                                    </optgroup>
+                                    <optgroup label="Craft Activities">
+                                        <option value="making batik meticulously">Making Batik Meticulously</option>
+                                        <option value="carving wood patiently">Carving Wood Patiently</option>
+                                        <option value="weaving diligently">Weaving Diligently</option>
+                                        <option value="spinning yarn carefully">Spinning Yarn Carefully</option>
+                                        <option value="creating ceramics carefully">Creating Ceramics Carefully</option>
+                                    </optgroup>
+                                    <optgroup label="Culinary Activities">
+                                        <option value="cooking enthusiastically">Cooking Enthusiastically</option>
+                                        <option value="mixing spices carefully">Mixing Spices Carefully</option>
+                                        <option value="frying nimbly">Frying Nimbly</option>
+                                        <option value="serving food neatly">Serving Food Neatly</option>
+                                        <option value="making herbal medicine carefully">Making Herbal Medicine Carefully</option>
+                                    </optgroup>
+                                    <optgroup label="Transportation Activities">
+                                        <option value="pedaling becak persistently">Pedaling Becak Persistently</option>
+                                        <option value="driving motorcycle taxi toughly">Driving Motorcycle Taxi Toughly</option>
+                                        <option value="driving horse cart patiently">Driving Horse Cart Patiently</option>
+                                        <option value="carrying goods strongly">Carrying Goods Strongly</option>
+                                        <option value="pushing cart diligently">Pushing Cart Diligently</option>
+                                    </optgroup>
+                                    <optgroup label="Art Activities">
+                                        <option value="performing puppetry wisely">Performing Puppetry Wisely</option>
+                                        <option value="dancing traditionally gracefully">Dancing Traditionally Gracefully</option>
+                                        <option value="playing gamelan meticulously">Playing Gamelan Meticulously</option>
+                                        <option value="playing angklung cheerfully">Playing Angklung Cheerfully</option>
+                                        <option value="singing folk songs beautifully">Singing Folk Songs Beautifully</option>
+                                    </optgroup>
+                                    <optgroup label="Healing Activities">
+                                        <option value="healing wisely">Healing Wisely</option>
+                                        <option value="massaging carefully">Massaging Carefully</option>
+                                        <option value="making herbal medicine meticulously">Making Herbal Medicine Meticulously</option>
+                                        <option value="adjusting bones skillfully">Adjusting Bones Skillfully</option>
+                                        <option value="performing cupping carefully">Performing Cupping Carefully</option>
+                                    </optgroup>
+                                    <optgroup label="Hosting Activities">
+                                        <option value="delivering news professionally">Delivering News Professionally</option>
+                                        <option value="interviewing guests intelligently">Interviewing Guests Intelligently</option>
+                                        <option value="hosting talk show interactively">Hosting Talk Show Interactively</option>
+                                        <option value="hosting quiz show energetically">Hosting Quiz Show Energetically</option>
+                                        <option value="hosting music show dynamically">Hosting Music Show Dynamically</option>
+                                        <option value="hosting variety show cheerfully">Hosting Variety Show Cheerfully</option>
+                                        <option value="hosting reality show naturally">Hosting Reality Show Naturally</option>
+                                        <option value="hosting documentary informatively">Hosting Documentary Informatively</option>
+                                        <option value="hosting cooking show friendly">Hosting Cooking Show Friendly</option>
+                                        <option value="hosting travel show enthusiastically">Hosting Travel Show Enthusiastically</option>
+                                        <option value="hosting lifestyle show elegantly">Hosting Lifestyle Show Elegantly</option>
+                                        <option value="hosting sports show energetically">Hosting Sports Show Energetically</option>
+                                        <option value="delivering breaking news firmly">Delivering Breaking News Firmly</option>
+                                        <option value="reporting live agilely">Reporting Live Agilely</option>
+                                        <option value="moderating political debate wisely">Moderating Political Debate Wisely</option>
+                                        <option value="analyzing economy carefully">Analyzing Economy Carefully</option>
+                                        <option value="reporting entertainment cheerfully">Reporting Entertainment Cheerfully</option>
+                                        <option value="reporting technology informatively">Reporting Technology Informatively</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Emotion -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Emotion</label>
+                                <select id="emotion" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <optgroup label="Positive Emotions">
+                                        <option value="friendly and polite">Friendly and Polite</option>
+                                        <option value="courteous and respectful">Courteous and Respectful</option>
+                                        <option value="sincere">Sincere</option>
+                                        <option value="patient">Patient</option>
+                                        <option value="persistent">Persistent</option>
+                                    </optgroup>
+                                    <optgroup label="Enthusiasm">
+                                        <option value="enthusiastic">Enthusiastic</option>
+                                        <option value="full of spirit">Full of Spirit</option>
+                                        <option value="passionate">Passionate</option>
+                                        <option value="eager">Eager</option>
+                                        <option value="highly motivated">Highly Motivated</option>
+                                    </optgroup>
+                                    <optgroup label="Calmness">
+                                        <option value="calm">Calm</option>
+                                        <option value="peaceful">Peaceful</option>
+                                        <option value="tranquil">Tranquil</option>
+                                        <option value="comfortable">Comfortable</option>
+                                        <option value="serene">Serene</option>
+                                    </optgroup>
+                                    <optgroup label="Happiness">
+                                        <option value="happy">Happy</option>
+                                        <option value="cheerful">Cheerful</option>
+                                        <option value="joyful">Joyful</option>
+                                        <option value="merry">Merry</option>
+                                        <option value="delighted">Delighted</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Environment and Atmosphere -->
+                    <div class="bg-light/50 p-6 rounded-lg">
+                        <h2 class="text-xl font-semibold text-dark mb-4 section-title">2. Environment and Atmosphere</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Location -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                                <select id="location" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <optgroup label="Market & Trade">
+                                        <option value="busy traditional market">Busy Traditional Market</option>
+                                        <option value="crowded morning market">Crowded Morning Market</option>
+                                        <option value="cozy coffee stall">Cozy Coffee Stall</option>
+                                        <option value="lively street vendor area">Lively Street Vendor Area</option>
+                                        <option value="glittering night market">Glittering Night Market</option>
+                                    </optgroup>
+                                    <optgroup label="Agriculture & Plantation">
+                                        <option value="green rice field">Green Rice Field</option>
+                                        <option value="fertile garden">Fertile Garden</option>
+                                        <option value="vast farmland">Vast Farmland</option>
+                                        <option value="picturesque plantation">Picturesque Plantation</option>
+                                        <option value="cool organic farm">Cool Organic Farm</option>
+                                    </optgroup>
+                                    <optgroup label="Village & Rural">
+                                        <option value="peaceful village">Peaceful Village</option>
+                                        <option value="picturesque hamlet">Picturesque Hamlet</option>
+                                        <option value="cool countryside">Cool Countryside</option>
+                                        <option value="bustling rural settlement">Bustling Rural Settlement</option>
+                                        <option value="harmonious neighborhood">Harmonious Neighborhood</option>
+                                    </optgroup>
+                                    <optgroup label="Coastal & Marine">
+                                        <option value="beautiful beach">Beautiful Beach</option>
+                                        <option value="busy harbor">Busy Harbor</option>
+                                        <option value="quiet island">Quiet Island</option>
+                                        <option value="calm coastal area">Calm Coastal Area</option>
+                                        <option value="charming bay">Charming Bay</option>
+                                    </optgroup>
+                                    <optgroup label="City & Urban">
+                                        <option value="busy city">Busy City</option>
+                                        <option value="modern urban area">Modern Urban Area</option>
+                                        <option value="crowded city center">Crowded City Center</option>
+                                        <option value="developing area">Developing Area</option>
+                                        <option value="dynamic environment">Dynamic Environment</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Time -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Time</label>
+                                <select id="time" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <optgroup label="Morning">
+                                        <option value="cool dawn">Cool Dawn</option>
+                                        <option value="bright morning">Bright Morning</option>
+                                        <option value="refreshing sunrise">Refreshing Sunrise</option>
+                                        <option value="chilly early morning">Chilly Early Morning</option>
+                                        <option value="beautiful sunrise">Beautiful Sunrise</option>
+                                    </optgroup>
+                                    <optgroup label="Noon">
+                                        <option value="hot midday">Hot Midday</option>
+                                        <option value="scorching noon">Scorching Noon</option>
+                                        <option value="bright midday">Bright Midday</option>
+                                        <option value="blazing afternoon">Blazing Afternoon</option>
+                                        <option value="warm late afternoon">Warm Late Afternoon</option>
+                                    </optgroup>
+                                    <optgroup label="Evening">
+                                        <option value="warm evening">Warm Evening</option>
+                                        <option value="romantic sunset">Romantic Sunset</option>
+                                        <option value="beautiful dusk">Beautiful Dusk</option>
+                                        <option value="cool twilight">Cool Twilight</option>
+                                        <option value="peaceful evening">Peaceful Evening</option>
+                                    </optgroup>
+                                    <optgroup label="Night">
+                                        <option value="cool night">Cool Night</option>
+                                        <option value="quiet nighttime">Quiet Nighttime</option>
+                                        <option value="peaceful night">Peaceful Night</option>
+                                        <option value="silent midnight">Silent Midnight</option>
+                                        <option value="lonely early morning">Lonely Early Morning</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Weather -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Weather</label>
+                                <select id="weather" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <optgroup label="Clear">
+                                        <option value="shiny clear">Shiny Clear</option>
+                                        <option value="bright and clear">Bright and Clear</option>
+                                        <option value="bright sunshine">Bright Sunshine</option>
+                                        <option value="clear blue sky">Clear Blue Sky</option>
+                                        <option value="cheerful clear weather">Cheerful Clear Weather</option>
+                                    </optgroup>
+                                    <optgroup label="Rain">
+                                        <option value="light drizzle">Light Drizzle</option>
+                                        <option value="gentle rain">Gentle Rain</option>
+                                        <option value="heavy rain">Heavy Rain</option>
+                                        <option value="torrential rain">Torrential Rain</option>
+                                        <option value="stormy rain">Stormy Rain</option>
+                                    </optgroup>
+                                    <optgroup label="Cloudy">
+                                        <option value="soft clouds">Soft Clouds</option>
+                                        <option value="overcast">Overcast</option>
+                                        <option value="cloudy sky">Cloudy Sky</option>
+                                        <option value="thick clouds">Thick Clouds</option>
+                                        <option value="dark clouds">Dark Clouds</option>
+                                    </optgroup>
+                                    <optgroup label="Special">
+                                        <option value="gentle breeze">Gentle Breeze</option>
+                                        <option value="strong wind">Strong Wind</option>
+                                        <option value="foggy">Foggy</option>
+                                        <option value="morning dew">Morning Dew</option>
+                                        <option value="cool air">Cool Air</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
+                            <!-- Season -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Season</label>
+                                <select id="season" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <optgroup label="Dry Season">
+                                        <option value="scorching dry season">Scorching Dry Season</option>
+                                        <option value="dry period">Dry Period</option>
+                                        <option value="blazing heat">Blazing Heat</option>
+                                        <option value="drought">Drought</option>
+                                        <option value="prolonged dry season">Prolonged Dry Season</option>
+                                    </optgroup>
+                                    <optgroup label="Rainy Season">
+                                        <option value="cool rainy season">Cool Rainy Season</option>
+                                        <option value="monsoon season">Monsoon Season</option>
+                                        <option value="heavy rainfall">Heavy Rainfall</option>
+                                        <option value="wet season">Wet Season</option>
+                                        <option value="torrential rain">Torrential Rain</option>
+                                    </optgroup>
+                                    <optgroup label="Transition">
+                                        <option value="seasonal transition">Seasonal Transition</option>
+                                        <option value="transitional period">Transitional Period</option>
+                                        <option value="season change">Season Change</option>
+                                        <option value="seasonal shift">Seasonal Shift</option>
+                                        <option value="changing seasons">Changing Seasons</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Cinematography -->
+                    <div class="bg-light/50 p-6 rounded-lg">
+                        <h2 class="text-xl font-semibold text-dark mb-4 section-title">3. Cinematography</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Style -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Style</label>
+                                <select id="style" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="epic cinematic">Epic Cinematic</option>
+                                    <option value="in-depth documentary">In-depth Documentary</option>
+                                    <option value="dynamic anime">Dynamic Anime</option>
+                                    <option value="cheerful cartoon">Cheerful Cartoon</option>
+                                    <option value="natural realistic">Natural Realistic</option>
+                                    <option value="classic vintage">Classic Vintage</option>
+                                    <option value="modern futuristic">Modern Futuristic</option>
+                                    <option value="mysterious film noir">Mysterious Film Noir</option>
+                                    <option value="professional commercial">Professional Commercial</option>
+                                </select>
+                            </div>
+
+                            <!-- Camera Movement -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Camera Movement</label>
+                                <select id="cameraMovement" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="stable static">Stable Static</option>
+                                    <option value="smooth panning">Smooth Panning</option>
+                                    <option value="dynamic dolly">Dynamic Dolly</option>
+                                    <option value="flowing tracking">Flowing Tracking</option>
+                                    <option value="spectacular drone">Spectacular Drone</option>
+                                    <option value="elegant crane">Elegant Crane</option>
+                                    <option value="stable steadicam">Stable Steadicam</option>
+                                    <option value="natural handheld">Natural Handheld</option>
+                                </select>
+                            </div>
+
+                            <!-- Camera Angle -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Camera Angle</label>
+                                <select id="cameraAngle" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="natural eye-level">Natural Eye-level</option>
+                                    <option value="dramatic low angle">Dramatic Low Angle</option>
+                                    <option value="impressive high angle">Impressive High Angle</option>
+                                    <option value="spectacular bird's eye view">Spectacular Bird's Eye View</option>
+                                    <option value="dynamic dutch angle">Dynamic Dutch Angle</option>
+                                    <option value="intimate over-the-shoulder">Intimate Over-the-shoulder</option>
+                                </select>
+                            </div>
+
+                            <!-- Focal Length -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Focal Length</label>
+                                <select id="focalLength" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="wide (24mm) expansive">Wide (24mm) Expansive</option>
+                                    <option value="normal (50mm) natural">Normal (50mm) Natural</option>
+                                    <option value="telephoto (85mm) intimate">Telephoto (85mm) Intimate</option>
+                                    <option value="ultra-wide (16mm) spectacular">Ultra-wide (16mm) Spectacular</option>
+                                    <option value="macro detailed">Macro Detailed</option>
+                                </select>
+                            </div>
+
+                            <!-- Lighting -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Lighting</label>
+                                <select id="lighting" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="natural lighting">Natural Lighting</option>
+                                    <option value="intense dramatic">Intense Dramatic</option>
+                                    <option value="soft calming">Soft Calming</option>
+                                    <option value="elegant backlight">Elegant Backlight</option>
+                                    <option value="professional studio">Professional Studio</option>
+                                    <option value="mysterious low-key">Mysterious Low-key</option>
+                                    <option value="cheerful high-key">Cheerful High-key</option>
+                                    <option value="futuristic neon">Futuristic Neon</option>
+                                </select>
+                            </div>
+
+                            <!-- Color Grading -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Color Grading</label>
+                                <select id="colorGrading" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="natural colors">Natural Colors</option>
+                                    <option value="warm soothing">Warm Soothing</option>
+                                    <option value="cool calming">Cool Calming</option>
+                                    <option value="classic vintage">Classic Vintage</option>
+                                    <option value="dramatic high contrast">Dramatic High Contrast</option>
+                                    <option value="elegant desaturated">Elegant Desaturated</option>
+                                    <option value="vibrant lively">Vibrant Lively</option>
+                                    <option value="timeless monochrome">Timeless Monochrome</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. Audio -->
+                    <div class="bg-light/50 p-6 rounded-lg">
+                        <h2 class="text-xl font-semibold text-dark mb-4 section-title">4. Audio</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Dialog -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Dialog</label>
+                                <select id="dialog" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="none">No Dialog</option>
+                                    <option value="informative narration">Informative Narration</option>
+                                    <option value="natural dialog">Natural Dialog</option>
+                                    <option value="in-depth monologue">In-depth Monologue</option>
+                                    <option value="professional interview">Professional Interview</option>
+                                    <option value="elegant voice over">Elegant Voice Over</option>
+                                    <option value="custom">Custom Input</option>
+                                </select>
+                                <div id="customDialogInput" class="hidden mt-2">
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe the type of dialog you want...">
+                                </div>
+                            </div>
+
+                            <!-- Dialog Character -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Dialog Character</label>
+                                <select id="dialogCharacter" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="none">None</option>
+                                    <optgroup label="News Anchors">
+                                        <option value="professional firm news anchor">Professional Firm News Anchor</option>
+                                        <option value="wise senior news anchor">Wise Senior News Anchor</option>
+                                        <option value="dynamic young news anchor">Dynamic Young News Anchor</option>
+                                        <option value="energetic sports news anchor">Energetic Sports News Anchor</option>
+                                        <option value="careful economic news anchor">Careful Economic News Anchor</option>
+                                        <option value="cheerful entertainment news anchor">Cheerful Entertainment News Anchor</option>
+                                        <option value="serious political news anchor">Serious Political News Anchor</option>
+                                        <option value="informative tech news anchor">Informative Tech News Anchor</option>
+                                    </optgroup>
+                                    <optgroup label="TV Hosts">
+                                        <option value="interactive talk show host">Interactive Talk Show Host</option>
+                                        <option value="energetic quiz show host">Energetic Quiz Show Host</option>
+                                        <option value="dynamic music show host">Dynamic Music Show Host</option>
+                                        <option value="cheerful variety show host">Cheerful Variety Show Host</option>
+                                        <option value="natural reality show host">Natural Reality Show Host</option>
+                                        <option value="informative documentary host">Informative Documentary Host</option>
+                                        <option value="friendly cooking show host">Friendly Cooking Show Host</option>
+                                        <option value="enthusiastic travel show host">Enthusiastic Travel Show Host</option>
+                                        <option value="elegant lifestyle host">Elegant Lifestyle Host</option>
+                                        <option value="energetic sports host">Energetic Sports Host</option>
+                                    </optgroup>
+                                    <optgroup label="Male Voices">
+                                        <option value="professional adult male">Professional Adult Male</option>
+                                        <option value="energetic young male">Energetic Young Male</option>
+                                        <option value="wise elderly male">Wise Elderly Male</option>
+                                        <option value="cheerful young boy">Cheerful Young Boy</option>
+                                    </optgroup>
+                                    <optgroup label="Female Voices">
+                                        <option value="elegant adult female">Elegant Adult Female</option>
+                                        <option value="dynamic young female">Dynamic Young Female</option>
+                                        <option value="wise elderly female">Wise Elderly Female</option>
+                                        <option value="cheerful young girl">Cheerful Young Girl</option>
+                                    </optgroup>
+                                    <optgroup label="Special Characters">
+                                        <option value="mechanical robot">Mechanical Robot</option>
+                                        <option value="mysterious alien">Mysterious Alien</option>
+                                        <option value="scary monster">Scary Monster</option>
+                                        <option value="magical fantasy creature">Magical Fantasy Creature</option>
+                                    </optgroup>
+                                    <option value="custom">Custom Input</option>
+                                </select>
+                                <div id="customDialogCharacterInput" class="hidden mt-2">
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe the voice character you want...">
+                                </div>
+                            </div>
+
+                            <!-- Dialog Content -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Dialog Content</label>
+                                <div id="dialogInputs" class="space-y-4">
+                                    <div class="flex gap-4 items-start">
+                                        <div class="w-1/4">
+                                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field dialog-character">
+                                                <option value="Character 1">Character 1</option>
+                                                <option value="Character 2">Character 2</option>
+                                                <option value="Character 3">Character 3</option>
+                                                <option value="Narrator">Narrator</option>
+                                                <option value="News Anchor">News Anchor</option>
+                                                <option value="custom">Custom Input</option>
+                                            </select>
+                                        </div>
+                                        <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field" placeholder="Enter dialog...">
+                                        <button type="button" class="text-red-500 hover:text-red-700" onclick="removeDialog(this)">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 mt-2">
+                                    <button type="button" onclick="addDialogInput()" class="text-primary hover:text-blue-700 flex items-center gap-1">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Add Dialog
+                                    </button>
+                                    <button type="button" onclick="addDialogCharacter()" class="text-primary hover:text-blue-700 flex items-center gap-1">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Add Character
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Voice Mood -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Voice Mood</label>
+                                <select id="voiceMood" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="none">None</option>
+                                    <optgroup label="Emotions">
+                                        <option value="cheerful happy">Cheerful Happy</option>
+                                        <option value="touching sad">Touching Sad</option>
+                                        <option value="firm angry">Firm Angry</option>
+                                        <option value="calming peaceful">Calming Peaceful</option>
+                                    </optgroup>
+                                    <optgroup label="Atmosphere">
+                                        <option value="dynamic lively">Dynamic Lively</option>
+                                        <option value="mysterious quiet">Mysterious Quiet</option>
+                                        <option value="sacred solemn">Sacred Solemn</option>
+                                        <option value="festive noisy">Festive Noisy</option>
+                                    </optgroup>
+                                    <option value="custom">Custom Input</option>
+                                </select>
+                                <div id="customVoiceMoodInput" class="hidden mt-2">
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe the voice mood you want...">
+                                </div>
+                            </div>
+
+                            <!-- Background Music -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Background Music</label>
+                                <select id="backgroundMusic" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field mb-2">
+                                    <option value="none">No Music</option>
+                                    <optgroup label="Genres">
+                                        <option value="elegant instrumental">Elegant Instrumental</option>
+                                        <option value="energetic pop">Energetic Pop</option>
+                                        <option value="majestic classical">Majestic Classical</option>
+                                        <option value="calming ambient">Calming Ambient</option>
+                                        <option value="futuristic electronic">Futuristic Electronic</option>
+                                        <option value="sophisticated jazz">Sophisticated Jazz</option>
+                                        <option value="powerful rock">Powerful Rock</option>
+                                    </optgroup>
+                                    <optgroup label="Moods">
+                                        <option value="intense dramatic">Intense Dramatic</option>
+                                        <option value="gentle romantic">Gentle Romantic</option>
+                                        <option value="deep mysterious">Deep Mysterious</option>
+                                        <option value="cheerful happy">Cheerful Happy</option>
+                                    </optgroup>
+                                    <option value="custom">Custom Input</option>
+                                </select>
+                                <div id="customMusicInput" class="hidden mt-2">
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe the music you want...">
+                                </div>
+                            </div>
+
+                            <!-- Sound Effects -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Sound Effects</label>
+                                <select id="soundEffects" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field mb-2">
+                                    <option value="none">No Effects</option>
+                                    <optgroup label="Nature">
+                                        <option value="cooling rain">Cooling Rain</option>
+                                        <option value="gentle breeze">Gentle Breeze</option>
+                                        <option value="calm waves">Calm Waves</option>
+                                        <option value="chirping birds">Chirping Birds</option>
+                                    </optgroup>
+                                    <optgroup label="Urban">
+                                        <option value="dynamic city noise">Dynamic City Noise</option>
+                                        <option value="passing vehicles">Passing Vehicles</option>
+                                        <option value="lively market sounds">Lively Market Sounds</option>
+                                        <option value="majestic train sounds">Majestic Train Sounds</option>
+                                    </optgroup>
+                                    <optgroup label="Atmosphere">
+                                        <option value="atmospheric ambient">Atmospheric Ambient</option>
+                                        <option value="realistic foley">Realistic Foley</option>
+                                        <option value="deep atmospheric">Deep Atmospheric</option>
+                                    </optgroup>
+                                    <option value="custom">Custom Input</option>
+                                </select>
+                                <div id="customSoundEffectsInput" class="hidden">
+                                    <div id="soundEffectsInputs" class="space-y-2">
+                                        <div class="flex gap-2">
+                                            <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe sound effect...">
+                                            <button type="button" class="text-red-500 hover:text-red-700" onclick="removeSoundEffect(this)">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="addSoundEffect()" class="mt-2 text-primary hover:text-blue-700 flex items-center gap-1">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                        </svg>
+                                        Add Sound Effect
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Volume -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Volume</label>
+                                <select id="volume" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="soft subtle">Soft Subtle</option>
+                                    <option value="balanced medium">Balanced Medium</option>
+                                    <option value="powerful loud">Powerful Loud</option>
+                                    <option value="custom">Custom Input</option>
+                                </select>
+                                <div id="customVolumeInput" class="hidden mt-2">
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe the volume level you want...">
+                                </div>
+                            </div>
+
+                            <!-- Background Music -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Background Music</label>
+                                <select id="backgroundMusic" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="none">No Background Music</option>
+                                    <option value="dangdut koplo">Dangdut Koplo</option>
+                                    <option value="calming ambient">Calming Ambient</option>
+                                    <option value="majestic orchestra">Majestic Orchestra</option>
+                                    <option value="energetic electronic">Energetic Electronic</option>
+                                    <option value="custom">Custom Input</option>
+                                </select>
+                                <div id="customMusicInput" class="hidden mt-2">
+                                    <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe the type of music you want...">
+                                </div>
+                            </div>
+
+                            <!-- Audio Translation -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Audio Translation</label>
+                                <select id="audioTranslation" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="none">No Translation</option>
+                                    <option value="english">Translate to English (Keep Dialog Original)</option>
+                                    <option value="full_english">Full English Translation</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5. Technical Parameters and Additional -->
+                    <div class="bg-light/50 p-6 rounded-lg">
+                        <h2 class="text-xl font-semibold text-dark mb-4 section-title">5. Technical Parameters and Additional</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Video Quality -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Video Quality</label>
+                                <select id="videoQuality" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                    <option value="clear standard">Clear Standard</option>
+                                    <option value="sharp hd">Sharp HD</option>
+                                    <option value="ultra sharp 4k">Ultra Sharp 4K</option>
+                                    <option value="spectacular 8k">Spectacular 8K</option>
+                                </select>
+                            </div>
+
+                            <!-- Additional Details -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Additional Details</label>
+                                <textarea id="additionalDetails" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" rows="3" placeholder="Add additional details or specific requirements to enhance video quality..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audio Mixing -->
+                    <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-700">Audio Mixing Settings</h3>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="showAudioMixing" class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary">
+                                <span class="text-sm text-gray-600">Show Settings</span>
+                            </label>
+                        </div>
+                        <div id="audioMixingContent" class="hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Dialog Mix -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Dialog Volume</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="range" id="dialogVolume" min="0" max="100" value="80" class="w-full">
+                                        <span id="dialogVolumeValue" class="text-sm text-gray-600">80%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Music Mix -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Music Volume</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="range" id="musicVolume" min="0" max="100" value="60" class="w-full">
+                                        <span id="musicVolumeValue" class="text-sm text-gray-600">60%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Effects Mix -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Sound Effects Volume</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="range" id="effectsVolume" min="0" max="100" value="40" class="w-full">
+                                        <span id="effectsVolumeValue" class="text-sm text-gray-600">40%</span>
+                                    </div>
+                                </div>
+
+                                <!-- Overall Mix -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Master Volume</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="range" id="overallVolume" min="0" max="100" value="100" class="w-full">
+                                        <span id="overallVolumeValue" class="text-sm text-gray-600">100%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Audio Processing -->
+                    <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-lg font-medium text-gray-700">Audio Processing</h3>
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" id="showAudioProcessing" class="form-checkbox h-5 w-5 text-primary rounded border-gray-300 focus:ring-primary">
+                                <span class="text-sm text-gray-600">Show Settings</span>
+                            </label>
+                        </div>
+                        <div id="audioProcessingContent" class="hidden">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Equalizer -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Equalizer</label>
+                                    <select id="equalizer" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                        <option value="none">No Equalizer</option>
+                                        <option value="vocal boost">Vocal Boost</option>
+                                        <option value="bass boost">Bass Boost</option>
+                                        <option value="treble boost">Treble Boost</option>
+                                        <option value="flat">Flat</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+
+                                <!-- Compression -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Compression</label>
+                                    <select id="compression" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                        <option value="none">No Compression</option>
+                                        <option value="light">Light</option>
+                                        <option value="medium">Medium</option>
+                                        <option value="heavy">Heavy</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+
+                                <!-- Reverb -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Reverb</label>
+                                    <select id="reverb" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                        <option value="none">No Reverb</option>
+                                        <option value="room">Room</option>
+                                        <option value="hall">Hall</option>
+                                        <option value="cathedral">Cathedral</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+
+                                <!-- Spatial Audio -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Spatial Audio</label>
+                                    <select id="spatialAudio" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field">
+                                        <option value="none">No Spatial Audio</option>
+                                        <option value="stereo">Stereo</option>
+                                        <option value="surround">Surround</option>
+                                        <option value="3d">3D Audio</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200">
+                        Generate Prompt
+                    </button>
+                </form>
+            </div>
+
+            <!-- Output Section -->
+            <div class="w-full lg:w-[500px] card rounded-xl p-8 lg:sticky lg:top-8">
+                <h2 class="text-xl font-semibold text-dark mb-4 section-title">Generated Prompt</h2>
+                <div id="generatedPrompt" class="bg-light/50 p-6 rounded-lg border border-gray-200 min-h-[calc(100vh-200px)] overflow-y-auto">
+                    <p class="text-gray-500">Your generated prompt will appear here...</p>
+                </div>
+                <button id="copyButton" class="mt-4 w-full btn-secondary text-dark py-3 px-4 rounded-lg hidden">
+                    Copy to Clipboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import PromptHandler from './promptHandler.js';
+
+        // Initialize PromptHandler
+        const promptHandler = new PromptHandler();
+        promptHandler.initializeCopyButton();
+
+        // Function to get element value
+        function getElementValue(id, defaultValue = '') {
+            const element = document.getElementById(id);
+            return element ? element.value : defaultValue;
+        }
+
+        // Function to get custom input value
+        function getCustomInputValue(selector, defaultValue = '') {
+            const element = document.querySelector(selector);
+            return element ? element.value : defaultValue;
+        }
+
+        // Function to update volume display
+        function updateVolumeDisplay(inputId, displayId) {
+            const input = document.getElementById(inputId);
+            const display = document.getElementById(displayId);
+            if (input && display) {
+                display.textContent = input.value + '%';
+            }
+        }
+
+        // Function to generate prompt
+        async function generatePrompt() {
+            try {
+                // Get all required values with fallbacks
+                const subject = getElementValue('subject', '');
+                const subjectCharacteristics = getElementValue('subjectCharacteristics', 'subject characteristics');
+                const mainAction = getElementValue('mainAction', 'performing action');
+                const emotion = getElementValue('emotion', 'with emotion');
+                const location = getElementValue('location', '');
+                const time = getElementValue('time', 'at time');
+                const weather = getElementValue('weather', 'with weather');
+                const season = getElementValue('season', 'during season');
+                const style = getElementValue('style', 'with style');
+                const cameraMovement = getElementValue('cameraMovement', 'with camera movement');
+                const cameraAngle = getElementValue('cameraAngle', 'from angle');
+                const focalLength = getElementValue('focalLength', 'with lens');
+                const lighting = getElementValue('lighting', 'with lighting');
+                const colorGrading = getElementValue('colorGrading', 'with color grading');
+                const backgroundMusic = getElementValue('backgroundMusic', 'none');
+                const musicMood = getElementValue('musicMood', 'none');
+                const soundEffects = getElementValue('soundEffects', 'none');
+                const volume = getElementValue('volume', 'balanced medium');
+                const videoQuality = getElementValue('videoQuality', 'clear standard');
+                const dialog = getElementValue('dialog', 'none');
+                const dialogCharacter = getElementValue('dialogCharacter', 'none');
+                const voiceMood = getElementValue('voiceMood', 'none');
+                const additionalDetails = getElementValue('additionalDetails', '');
+
+                // Get all dialog inputs with their characters
+                const dialogInputs = Array.from(document.querySelectorAll('#dialogInputs .flex')).map(div => {
+                    const character = div.querySelector('.dialog-character').value;
+                    const text = div.querySelector('input').value.trim();
+                    return text ? `"${text}"` : null;
+                }).filter(Boolean);
+
+                // Get custom inputs
+                const customDialog = getCustomInputValue('#customDialogInput input');
+                const customDialogCharacter = getCustomInputValue('#customDialogCharacterInput input');
+                const customVoiceMood = getCustomInputValue('#customVoiceMoodInput input');
+                const customMusic = getCustomInputValue('#customMusicInput input');
+                const customVolume = getCustomInputValue('#customVolumeInput input');
+                const customSoundEffects = Array.from(document.querySelectorAll('#soundEffectsInputs input'))
+                    .map(input => input.value.trim())
+                    .filter(value => value !== '');
+
+                // Get audio processing values
+                const dialogVolume = getElementValue('dialogVolume', '80');
+                const musicVolume = getElementValue('musicVolume', '60');
+                const effectsVolume = getElementValue('effectsVolume', '40');
+                const overallVolume = getElementValue('overallVolume', '100');
+                const equalizer = getElementValue('equalizer', 'none');
+                const compression = getElementValue('compression', 'none');
+                const reverb = getElementValue('reverb', 'none');
+                const spatialAudio = getElementValue('spatialAudio', 'none');
+                const audioTranslation = getElementValue('audioTranslation', 'none');
+
+                let audioDescription = [];
+                
+                // Add dialog if present
+                if (dialog !== 'none') {
+                    let dialogText = '';
+                    if (dialog === 'custom' && customDialog) {
+                        dialogText = customDialog;
+                    } else {
+                        dialogText = dialog;
+                    }
+
+                    if (dialogCharacter !== 'none') {
+                        dialogText += ` ${dialogCharacter === 'custom' && customDialogCharacter ? customDialogCharacter : dialogCharacter}`;
+                    }
+
+                    if (voiceMood !== 'none') {
+                        dialogText += ` with ${voiceMood === 'custom' && customVoiceMood ? customVoiceMood : voiceMood} mood`;
+                    }
+
+                    if (dialogInputs.length > 0) {
+                        dialogText += `: [${dialogInputs.join(', ')}]`;
+                    }
+
+                    if (document.getElementById('showAudioMixing')?.checked) {
+                        dialogText += ` (${dialogVolume}%)`;
+                    }
+
+                    // Add translation note if needed
+                    if (audioTranslation === 'english') {
+                        dialogText += ' (Keep original dialog)';
+                    } else if (audioTranslation === 'full_english') {
+                        dialogText += ' (Translate to English)';
+                    }
+
+                    audioDescription.push(dialogText);
+                }
+                
+                // Add music if present
+                if (backgroundMusic !== 'none') {
+                    let musicText = 'Background music: ';
+                    if (backgroundMusic === 'custom' && customMusic) {
+                        musicText += customMusic;
+                    } else {
+                        musicText += backgroundMusic;
+                    }
+                    if (musicMood !== 'none') {
+                        musicText += ` with ${musicMood === 'custom' && customMusicMood ? customMusicMood : musicMood} mood`;
+                    }
+                    if (document.getElementById('showAudioMixing')?.checked) {
+                        musicText += ` (${musicVolume}%)`;
+                    }
+                    audioDescription.push(musicText);
+                }
+                
+                // Add sound effects if present
+                if (soundEffects !== 'none') {
+                    let effectsText = '';
+                    if (soundEffects === 'custom' && customSoundEffects.length > 0) {
+                        effectsText = `sound effects: [${customSoundEffects.join(', ')}]`;
+                    } else {
+                        effectsText = `sound effects ${soundEffects}`;
+                    }
+                    if (document.getElementById('showAudioMixing')?.checked) {
+                        effectsText += ` (${effectsVolume}%)`;
+                    }
+                    audioDescription.push(effectsText);
+                }
+
+                // Add audio processing details only if section is visible
+                if (document.getElementById('showAudioProcessing')?.checked) {
+                    let processingDetails = [];
+                    if (equalizer !== 'none') {
+                        processingDetails.push(`Equalizer: ${equalizer}`);
+                    }
+                    if (compression !== 'none') {
+                        processingDetails.push(`Compression: ${compression}`);
+                    }
+                    if (reverb !== 'none') {
+                        processingDetails.push(`Reverb: ${reverb}`);
+                    }
+                    if (spatialAudio !== 'none') {
+                        processingDetails.push(`Spatial Audio: ${spatialAudio}`);
+                    }
+
+                    if (processingDetails.length > 0) {
+                        audioDescription.push(`Audio Processing: ${processingDetails.join(', ')}`);
+                    }
+                }
+
+                // Combine all audio elements
+                const volumeText = volume === 'custom' && customVolume ? customVolume : volume;
+                let audioText = audioDescription.length > 0 
+                    ? `Audio: ${audioDescription.join(', ')}${document.getElementById('showAudioMixing')?.checked ? ` (Master: ${overallVolume}%)` : ''}`
+                    : 'No audio';
+
+                // Build the prompt with all inputs
+                let prompt = '';
+                
+                // Add subject and characteristics
+                if (subject && subject.trim() !== '') {
+                    prompt += `Create a ${style} style video about ${subject}`;
+                } else {
+                    prompt += `Create a ${style} style video about ${subjectCharacteristics}`;
+                }
+
+                // Add action and emotion
+                prompt += ` who is ${mainAction} with ${emotion} emotion`;
+
+                // Add location and time
+                if (location && location.trim() !== '') {
+                    prompt += ` at ${location}`;
+                }
+                prompt += ` during ${time} ${season} with ${weather} weather. \n\n`;
+
+                // Add camera details
+                prompt += `Use ${cameraMovement} camera movement from ${cameraAngle} angle with ${focalLength} lens. `;
+                prompt += `Apply ${lighting} lighting and ${colorGrading} color grading. \n\n`;
+
+                // Add audio details
+                prompt += `${audioText}. \n\n`;
+
+                // Add technical specifications
+                prompt += `Technical specifications: ${videoQuality} quality.`;
+
+                // Add additional details if present
+                if (additionalDetails) {
+                    prompt += ` \n\n${additionalDetails}`;
+                }
+
+                const generatedPromptDiv = document.getElementById('generatedPrompt');
+                const copyButton = document.getElementById('copyButton');
+                
+                if (!generatedPromptDiv) {
+                    throw new Error('Prompt output element not found');
+                }
+
+                // Show loading state
+                generatedPromptDiv.innerHTML = `
+                    <div class="flex items-center justify-center p-4">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <span class="ml-2 text-gray-600">Generating prompt...</span>
+                    </div>
+                `;
+
+                // Extract dialogs and sound effects before translation
+                const dialogRegex = /\[([^\]]+)\]/g;
+                const dialogs = [];
+                let match;
+                while ((match = dialogRegex.exec(prompt)) !== null) {
+                    dialogs.push({
+                        original: match[0],
+                        text: match[1],
+                        context: prompt.substring(0, match.index).split('Audio:')[1]?.trim() || ''
+                    });
+                }
+
+                // Replace dialogs with placeholders
+                let promptForTranslation = prompt;
+                dialogs.forEach((dialog, index) => {
+                    promptForTranslation = promptForTranslation.replace(dialog.original, `[DIALOG_${index}]`);
+                });
+
+                // Translate the prompt using PromptHandler
+                const translatedPrompt = await promptHandler.translateText(promptForTranslation);
+
+                // Restore dialogs in translated prompt
+                let finalTranslatedPrompt = translatedPrompt;
+                dialogs.forEach((dialog, index) => {
+                    // Keep the original dialog text and its context
+                    const dialogWithContext = dialog.context ? `${dialog.context}: ${dialog.original}` : dialog.original;
+                    // Replace the placeholder with the full dialog including context
+                    finalTranslatedPrompt = finalTranslatedPrompt.replace(`[DIALOG_${index}]`, dialogWithContext);
+                });
+
+                // Ensure audio section is properly formatted
+                if (finalTranslatedPrompt.includes('Audio:')) {
+                    const audioParts = finalTranslatedPrompt.split('Audio:');
+                    if (audioParts.length > 1) {
+                        const audioContent = audioParts[1].trim();
+                        if (!audioContent.includes('[')) {
+                            // If audio content doesn't have dialog, add it back
+                            const originalAudio = prompt.split('Audio:')[1]?.trim() || '';
+                            finalTranslatedPrompt = finalTranslatedPrompt.replace(
+                                `Audio: ${audioContent}`,
+                                `Audio: ${originalAudio}`
+                            );
+                        }
+                    }
+                }
+
+                // Create output HTML with better formatting
+                const outputHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div class="flex justify-between items-center mb-2">
+                                <h3 class="text-sm font-medium text-blue-800">Original Prompt (English):</h3>
+                                <button type="button" class="copy-btn text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1 px-3 py-1 rounded border border-blue-200 hover:border-blue-400 transition-colors" data-text="${prompt.replace(/"/g, '&quot;').replace(/\n/g, '\\n')}">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                    </svg>
+                                    <span>Copy</span>
+                                </button>
+                            </div>
+                            <p class="text-gray-800 whitespace-pre-line">${prompt}</p>
+                        </div>
+                    </div>
+                `;
+
+                generatedPromptDiv.innerHTML = outputHTML;
+                
+                // Add click event listeners to copy buttons
+                document.querySelectorAll('.copy-btn').forEach(button => {
+                    button.addEventListener('click', async function() {
+                        const text = this.getAttribute('data-text');
+                        try {
+                            await navigator.clipboard.writeText(text);
+                            
+                            // Update button text to show success
+                            const span = this.querySelector('span');
+                            if (span) {
+                                const originalText = span.textContent;
+                                span.textContent = '✓ Copied!';
+                                this.classList.add('text-green-600');
+                                this.classList.add('border-green-400');
+                                
+                                // Reset button after 2 seconds
+                                setTimeout(() => {
+                                    span.textContent = originalText;
+                                    this.classList.remove('text-green-600');
+                                    this.classList.remove('border-green-400');
+                                }, 2000);
+                            }
+                        } catch (err) {
+                            console.error('Failed to copy text: ', err);
+                            
+                            // Show error state
+                            const span = this.querySelector('span');
+                            if (span) {
+                                const originalText = span.textContent;
+                                span.textContent = '❌ Failed';
+                                this.classList.add('text-red-600');
+                                this.classList.add('border-red-400');
+                                
+                                // Reset button after 2 seconds
+                                setTimeout(() => {
+                                    span.textContent = originalText;
+                                    this.classList.remove('text-red-600');
+                                    this.classList.remove('border-red-400');
+                                }, 2000);
+                            }
+                        }
+                    });
+                });
+
+                // Remove the old copy button
+                const oldCopyButton = document.getElementById('copyButton');
+                if (oldCopyButton) {
+                    oldCopyButton.remove();
+                }
+
+                // Scroll to generated prompt only on mobile
+                if (window.innerWidth < 1024) {
+                    generatedPromptDiv.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
+            } catch (error) {
+                console.error('Error generating prompt:', error);
+                const generatedPromptDiv = document.getElementById('generatedPrompt');
+                if (generatedPromptDiv) {
+                    generatedPromptDiv.innerHTML = `
+                        <div class="bg-red-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-medium text-red-800 mb-2">Error:</h3>
+                            <p class="text-gray-800">${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Function to add event listeners
+        function addInputListeners() {
+            // Get all form elements
+            const formElements = document.querySelectorAll('#promptForm input, #promptForm select, #promptForm textarea');
+            
+            // Add event listeners to each element
+            formElements.forEach(element => {
+                if (element.type === 'range') {
+                    element.addEventListener('input', function() {
+                        updateVolumeDisplay(this.id, this.id + 'Value');
+                        generatePrompt();
+                    });
+                } else {
+                    // Add both input and change events for better responsiveness
+                    element.addEventListener('input', generatePrompt);
+                    element.addEventListener('change', generatePrompt);
+                    element.addEventListener('keyup', generatePrompt);
+                }
+            });
+
+            // Add event listeners for custom inputs
+            const customInputs = {
+                'dialog': 'customDialogInput',
+                'dialogCharacter': 'customDialogCharacterInput',
+                'voiceMood': 'customVoiceMoodInput',
+                'backgroundMusic': 'customMusicInput',
+                'soundEffects': 'customSoundEffectsInput',
+                'volume': 'customVolumeInput'
+            };
+
+            Object.entries(customInputs).forEach(([selectId, inputId]) => {
+                const select = document.getElementById(selectId);
+                const input = document.getElementById(inputId);
+                if (select && input) {
+                    select.addEventListener('change', function() {
+                        input.classList.toggle('hidden', this.value !== 'custom');
+                        generatePrompt();
+                    });
+                    // Add event listeners to custom input fields
+                    input.addEventListener('input', generatePrompt);
+                    input.addEventListener('change', generatePrompt);
+                    input.addEventListener('keyup', generatePrompt);
+                }
+            });
+
+            // Add event listeners for dynamic inputs
+            const dialogInputs = document.getElementById('dialogInputs');
+            if (dialogInputs) {
+                dialogInputs.addEventListener('input', function(e) {
+                    if (e.target.tagName === 'INPUT') {
+                        generatePrompt();
+                    }
+                });
+            }
+
+            const soundEffectsInputs = document.getElementById('soundEffectsInputs');
+            if (soundEffectsInputs) {
+                soundEffectsInputs.addEventListener('input', function(e) {
+                    if (e.target.tagName === 'INPUT') {
+                        generatePrompt();
+                    }
+                });
+            }
+
+            // Add event listener for form submission
+            const promptForm = document.getElementById('promptForm');
+            if (promptForm) {
+                promptForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    generatePrompt();
+                });
+            }
+
+            // Add event listeners for audio mixing and processing toggles
+            const showAudioMixing = document.getElementById('showAudioMixing');
+            if (showAudioMixing) {
+                showAudioMixing.addEventListener('change', function() {
+                    const audioMixingContent = document.getElementById('audioMixingContent');
+                    if (audioMixingContent) {
+                        audioMixingContent.classList.toggle('hidden', !this.checked);
+                    }
+                    generatePrompt();
+                });
+            }
+
+            const showAudioProcessing = document.getElementById('showAudioProcessing');
+            if (showAudioProcessing) {
+                showAudioProcessing.addEventListener('change', function() {
+                    const audioProcessingContent = document.getElementById('audioProcessingContent');
+                    if (audioProcessingContent) {
+                        audioProcessingContent.classList.toggle('hidden', !this.checked);
+                    }
+                    generatePrompt();
+                });
+            }
+        }
+
+        // Function to add new dialog input
+        window.addDialogInput = function() {
+            const dialogInputs = document.getElementById('dialogInputs');
+            if (dialogInputs) {
+                const newDialog = document.createElement('div');
+                newDialog.className = 'flex gap-4 items-start';
+                newDialog.innerHTML = `
+                    <div class="w-1/4">
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field dialog-character">
+                            ${Array.from(document.querySelectorAll('.dialog-character option')).map(opt => opt.outerHTML).join('')}
+                        </select>
+                    </div>
+                    <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field" placeholder="Enter dialog...">
+                    <button type="button" class="text-red-500 hover:text-red-700" onclick="removeDialog(this)">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                `;
+                dialogInputs.appendChild(newDialog);
+                
+                // Add event listeners to new elements
+                const newInput = newDialog.querySelector('input[type="text"]');
+                const newSelect = newDialog.querySelector('select');
+                
+                if (newInput) {
+                    newInput.addEventListener('input', generatePrompt);
+                    newInput.addEventListener('change', generatePrompt);
+                    newInput.addEventListener('keyup', generatePrompt);
+                }
+                if (newSelect) {
+                    newSelect.addEventListener('change', function() {
+                        if (this.value === 'custom') {
+                            const customName = prompt('Enter character name:');
+                            if (customName) {
+                                const option = document.createElement('option');
+                                option.value = customName;
+                                option.text = customName;
+                                this.appendChild(option);
+                                this.value = customName;
+                            } else {
+                                this.value = 'Character 1';
+                            }
+                        }
+                        generatePrompt();
+                    });
+                }
+                
+                generatePrompt();
+            }
+        }
+
+        // Function to add new dialog character
+        window.addDialogCharacter = function() {
+            const customName = prompt('Enter new character name:');
+            if (customName) {
+                const characterOptions = document.querySelectorAll('.dialog-character');
+                characterOptions.forEach(select => {
+                    const option = document.createElement('option');
+                    option.value = customName;
+                    option.text = customName;
+                    select.appendChild(option);
+                });
+                generatePrompt();
+            }
+        }
+
+        // Function to remove dialog input
+        window.removeDialog = function(button) {
+            const dialogInputs = document.getElementById('dialogInputs');
+            if (dialogInputs && dialogInputs.children.length > 1) {
+                button.parentElement.remove();
+                generatePrompt();
+            }
+        }
+
+        // Function to remove sound effect input
+        window.removeSoundEffect = function(button) {
+            const soundEffectsInputs = document.getElementById('soundEffectsInputs');
+            if (soundEffectsInputs && soundEffectsInputs.children.length > 1) {
+                button.parentElement.remove();
+                generatePrompt();
+            }
+        }
+
+        // Initialize when the page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Add all event listeners
+            addInputListeners();
+            
+            // Set initial volume displays
+            updateVolumeDisplay('dialogVolume', 'dialogVolumeValue');
+            updateVolumeDisplay('musicVolume', 'musicVolumeValue');
+            updateVolumeDisplay('effectsVolume', 'effectsVolumeValue');
+            updateVolumeDisplay('overallVolume', 'overallVolumeValue');
+            
+            // Initialize dropdown translations
+            await promptHandler.initializeDropdownTranslations();
+            
+            // Generate initial prompt
+            generatePrompt();
+            
+            // Setup character search functionality
+            setupCharacterSearch();
+        });
+
+        // Add animation to form sections
+        document.querySelectorAll('.bg-light\\/50').forEach((section, index) => {
+            section.style.animationDelay = `${index * 0.1}s`;
+            section.classList.add('animate-fade-in');
+        });
+
+        // Add resize handler for responsive behavior
+        window.addEventListener('resize', function() {
+            const outputSection = document.querySelector('.lg\\:sticky');
+            if (outputSection) {
+                if (window.innerWidth < 1024) {
+                    outputSection.style.position = 'relative';
+                } else {
+                    outputSection.style.position = 'sticky';
+                }
+            }
+        });
+
+        // Add this to your existing JavaScript
+        function setupCharacterSearch() {
+            const searchInputs = document.querySelectorAll('.character-search');
+            searchInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const select = this.nextElementSibling;
+                    const options = select.querySelectorAll('option');
+                    
+                    options.forEach(option => {
+                        const text = option.text.toLowerCase();
+                        if (text.includes(searchTerm) || option.value === 'custom') {
+                            option.style.display = '';
+                        } else {
+                            option.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+    </script>
+</body>
+</html>
