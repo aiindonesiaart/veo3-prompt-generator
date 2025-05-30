@@ -280,12 +280,12 @@ class PromptHandler {
             // Show success message
             const copyButton = document.getElementById('copyButton');
             if (copyButton) {
-                const originalText = copyButton.innerHTML;
-                copyButton.innerHTML = '✓ Tersalin!';
-                copyButton.classList.add('bg-green-500');
+                const originalText = copyButton.textContent;
+                copyButton.textContent = '✓ Copied!';
+                copyButton.classList.add('bg-green-100', 'text-green-800');
                 setTimeout(() => {
-                    copyButton.innerHTML = originalText;
-                    copyButton.classList.remove('bg-green-500');
+                    copyButton.textContent = originalText;
+                    copyButton.classList.remove('bg-green-100', 'text-green-800');
                 }, 2000);
             }
         } catch (err) {
@@ -293,11 +293,11 @@ class PromptHandler {
             // Show error message
             const copyButton = document.getElementById('copyButton');
             if (copyButton) {
-                const originalText = copyButton.innerHTML;
-                copyButton.innerHTML = '❌ Gagal menyalin';
+                const originalText = copyButton.textContent;
+                copyButton.textContent = '❌ Failed to copy';
                 copyButton.classList.add('bg-red-500');
                 setTimeout(() => {
-                    copyButton.innerHTML = originalText;
+                    copyButton.textContent = originalText;
                     copyButton.classList.remove('bg-red-500');
                 }, 2000);
             }
@@ -311,7 +311,8 @@ class PromptHandler {
             copyButton.addEventListener('click', () => {
                 const generatedPrompt = document.getElementById('generatedPrompt');
                 if (generatedPrompt) {
-                    this.copyToClipboard(generatedPrompt.value);
+                    const promptText = generatedPrompt.querySelector('p')?.textContent || '';
+                    this.copyToClipboard(promptText);
                 }
             });
         }
@@ -397,15 +398,15 @@ document.addEventListener('DOMContentLoaded', function() {
             newDialog.innerHTML = `
                 <div class="w-1/4">
                     <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field dialog-character">
-                        <option value="Karakter 1">Karakter 1</option>
-                        <option value="Karakter 2">Karakter 2</option>
-                        <option value="Karakter 3">Karakter 3</option>
-                        <option value="Narator">Narator</option>
-                        <option value="Pembawa Berita">Pembawa Berita</option>
-                        <option value="custom">Input Manual</option>
+                        <option value="Karakter 1">Character 1</option>
+                        <option value="Karakter 2">Character 2</option>
+                        <option value="Karakter 3">Character 3</option>
+                        <option value="Narator">Narrator</option>
+                        <option value="Pembawa Berita">News Anchor</option>
+                        <option value="custom">Custom Input</option>
                     </select>
                 </div>
-                <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field" placeholder="Masukkan dialog...">
+                <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field" placeholder="Enter dialog...">
                 <button type="button" class="text-red-500 hover:text-red-700" onclick="removeDialog(this)">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -419,7 +420,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addDialogInput = addDialogInput;
     
     function addDialogCharacter() {
-        const customName = prompt('Masukkan nama karakter baru:');
+        const customName = prompt('Enter new character name:');
         if (customName) {
             const characterOptions = document.querySelectorAll('.dialog-character');
             characterOptions.forEach(select => {
@@ -449,7 +450,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const newEffect = document.createElement('div');
             newEffect.className = 'flex gap-2';
             newEffect.innerHTML = `
-                <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Deskripsikan efek suara...">
+                <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Describe sound effect...">
                 <button type="button" class="text-red-500 hover:text-red-700" onclick="removeSoundEffect(this)">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -472,13 +473,13 @@ document.addEventListener('DOMContentLoaded', function() {
     window.removeSoundEffect = removeSoundEffect;
     
     // Form submission
-    promptForm.addEventListener('submit', function(e) {
+    promptForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        generatePrompt();
+        await generatePrompt();
     });
     
     // Generate prompt function
-    function generatePrompt() {
+    async function generatePrompt() {
         // Get all form values
         const subject = document.getElementById('subject').value;
         const subjectCharacteristics = document.getElementById('subjectCharacteristics').value;
@@ -582,54 +583,55 @@ document.addEventListener('DOMContentLoaded', function() {
             prompt += `\n\n${additionalDetails}`;
         }
         
-        // Display the prompt
+        // Translate the prompt if needed
+        let englishPrompt = '';
+        const translationOption = document.getElementById('audioTranslation').value;
+        
+        if (translationOption === 'english' || translationOption === 'full_english') {
+            englishPrompt = await promptHandler.translateText(prompt);
+        }
+        
+        // Display the prompts
         generatedPrompt.innerHTML = `
             <div class="space-y-4">
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <h3 class="text-sm font-medium text-blue-800 mb-2">Prompt dalam Bahasa Indonesia:</h3>
+                    <h3 class="text-sm font-medium text-blue-800 mb-2">Prompt in Indonesian:</h3>
                     <p class="text-gray-800 whitespace-pre-line">${prompt}</p>
                     <button class="copy-btn mt-2 text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1 px-3 py-1 rounded border border-blue-200 hover:border-blue-400 transition-colors" data-text="${prompt.replace(/"/g, '&quot;').replace(/\n/g, '\\n')}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
                         </svg>
-                        <span>Salin</span>
+                        <span>Copy</span>
                     </button>
                 </div>
-            </div>
         `;
+        
+        if (englishPrompt) {
+            generatedPrompt.innerHTML += `
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h3 class="text-sm font-medium text-green-800 mb-2">Translated Prompt in English:</h3>
+                    <p class="text-gray-800 whitespace-pre-line">${englishPrompt}</p>
+                    <button class="copy-btn mt-2 text-green-600 hover:text-green-800 text-sm flex items-center gap-1 px-3 py-1 rounded border border-green-200 hover:border-green-400 transition-colors" data-text="${englishPrompt.replace(/"/g, '&quot;').replace(/\n/g, '\\n')}">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                        </svg>
+                        <span>Copy</span>
+                    </button>
+                </div>
+            `;
+        }
+        
+        generatedPrompt.innerHTML += `</div>`;
         
         // Show copy button
         copyButton.classList.remove('hidden');
-        
-        // Add click event to copy button
-        copyButton.addEventListener('click', function() {
-            navigator.clipboard.writeText(prompt).then(() => {
-                const originalText = copyButton.textContent;
-                copyButton.textContent = '✓ Tersalin!';
-                copyButton.classList.add('bg-green-100', 'text-green-800');
-                setTimeout(() => {
-                    copyButton.textContent = originalText;
-                    copyButton.classList.remove('bg-green-100', 'text-green-800');
-                }, 2000);
-            });
-        });
+        promptHandler.initializeCopyButton();
         
         // Add click events to all copy buttons
         document.querySelectorAll('.copy-btn').forEach(button => {
             button.addEventListener('click', function() {
                 const text = this.getAttribute('data-text').replace(/\\n/g, '\n').replace(/&quot;/g, '"');
-                navigator.clipboard.writeText(text).then(() => {
-                    const span = this.querySelector('span');
-                    if (span) {
-                        const originalText = span.textContent;
-                        span.textContent = '✓ Tersalin!';
-                        this.classList.add('bg-green-100', 'text-green-800', 'border-green-400');
-                        setTimeout(() => {
-                            span.textContent = originalText;
-                            this.classList.remove('bg-green-100', 'text-green-800', 'border-green-400');
-                        }, 2000);
-                    }
-                });
+                promptHandler.copyToClipboard(text);
             });
         });
     }
