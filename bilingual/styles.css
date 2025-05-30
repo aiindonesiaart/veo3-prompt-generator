@@ -1,0 +1,122 @@
+/* Base */
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Inter', sans-serif;
+}
+.container {
+  max-width: 1200px;
+}
+
+/* Cards */
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.section-title {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2563EB;
+}
+.section-title::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: #3B82F6;
+  border-radius: 2px;
+}
+
+/* Inputs */
+.input-field {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+.input-field:focus {
+  outline: none;
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+.btn-secondary {
+  background: #E5E7EB;
+  color: #1F2937;
+  padding: 10px;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.btn-secondary:hover {
+  background: #D1D5DB;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  appearance: none;
+  width: 40px;
+  height: 20px;
+  background-color: #ccc;
+  border-radius: 9999px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.toggle-switch:checked {
+  background-color: #3B82F6;
+}
+.toggle-switch::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 9999px;
+  transition: transform 0.3s ease;
+}
+.toggle-switch:checked::before {
+  transform: translateX(20px);
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
