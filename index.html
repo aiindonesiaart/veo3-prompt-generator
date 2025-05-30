@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -169,7 +168,6 @@
             <p class="text-gray-600 text-lg">Buat prompt video yang menakjubkan dengan mudah</p>
         </div>
         
-
         <!-- Main Content -->
         <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8">
             <!-- Form Section -->
@@ -1067,1894 +1065,325 @@
         </div>
     </div>
 
-    <script type="module">
-        import PromptHandler from './promptHandler.js';
-
-        // Initialize PromptHandler
-        const promptHandler = new PromptHandler();
-        promptHandler.initializeCopyButton();
-
-        // Function to get element value
-        function getElementValue(id, defaultValue = '') {
-            const element = document.getElementById(id);
-            return element ? element.value : defaultValue;
-        }
-
-        // Function to get custom input value
-        function getCustomInputValue(selector, defaultValue = '') {
-            const element = document.querySelector(selector);
-            return element ? element.value : defaultValue;
-        }
-
-        // Function to update volume display
-        function updateVolumeDisplay(inputId, displayId) {
-            const input = document.getElementById(inputId);
-            const display = document.getElementById(displayId);
-            if (input && display) {
-                display.textContent = input.value + '%';
-            }
-        }
-
-        // Function to generate prompt
-        async function generatePrompt() {
-            try {
-                // Get all required values with fallbacks
-                const subject = getElementValue('subject', '');
-                const subjectCharacteristics = getElementValue('subjectCharacteristics', 'karakteristik subjek');
-                const mainAction = getElementValue('mainAction', 'melakukan aksi');
-                const emotion = getElementValue('emotion', 'dengan emosi');
-                const location = getElementValue('location', '');
-                const time = getElementValue('time', 'pada waktu');
-                const weather = getElementValue('weather', 'dengan cuaca');
-                const season = getElementValue('season', 'pada musim');
-                const style = getElementValue('style', 'dengan gaya');
-                const cameraMovement = getElementValue('cameraMovement', 'dengan pergerakan kamera');
-                const cameraAngle = getElementValue('cameraAngle', 'dari sudut');
-                const focalLength = getElementValue('focalLength', 'dengan lensa');
-                const lighting = getElementValue('lighting', 'dengan pencahayaan');
-                const colorGrading = getElementValue('colorGrading', 'dengan gradiasi warna');
-                const backgroundMusic = getElementValue('backgroundMusic', 'none');
-                const musicMood = getElementValue('musicMood', 'none');
-                const soundEffects = getElementValue('soundEffects', 'none');
-                const volume = getElementValue('volume', 'sedang yang seimbang');
-                const videoQuality = getElementValue('videoQuality', 'standar yang jernih');
-                const dialog = getElementValue('dialog', 'none');
-                const dialogCharacter = getElementValue('dialogCharacter', 'none');
-                const voiceMood = getElementValue('voiceMood', 'none');
-                const additionalDetails = getElementValue('additionalDetails', '');
-
-                // Get all dialog inputs with their characters
-                const dialogInputs = Array.from(document.querySelectorAll('#dialogInputs .flex')).map(div => {
-                    const character = div.querySelector('.dialog-character').value;
-                    const text = div.querySelector('input').value.trim();
-                    return text ? `"${text}"` : null;
-                }).filter(Boolean);
-
-                // Get custom inputs
-                const customDialog = getCustomInputValue('#customDialogInput input');
-                const customDialogCharacter = getCustomInputValue('#customDialogCharacterInput input');
-                const customVoiceMood = getCustomInputValue('#customVoiceMoodInput input');
-                const customMusic = getCustomInputValue('#customMusicInput input');
-                const customVolume = getCustomInputValue('#customVolumeInput input');
-                const customSoundEffects = Array.from(document.querySelectorAll('#soundEffectsInputs input'))
-                    .map(input => input.value.trim())
-                    .filter(value => value !== '');
-
-                // Get audio processing values
-                const dialogVolume = getElementValue('dialogVolume', '80');
-                const musicVolume = getElementValue('musicVolume', '60');
-                const effectsVolume = getElementValue('effectsVolume', '40');
-                const overallVolume = getElementValue('overallVolume', '100');
-                const equalizer = getElementValue('equalizer', 'none');
-                const compression = getElementValue('compression', 'none');
-                const reverb = getElementValue('reverb', 'none');
-                const spatialAudio = getElementValue('spatialAudio', 'none');
-                const audioTranslation = getElementValue('audioTranslation', 'none');
-
-                let audioDescription = [];
-                
-                // Add dialog if present
-                if (dialog !== 'none') {
-                    let dialogText = '';
-                    if (dialog === 'custom' && customDialog) {
-                        dialogText = customDialog;
-                    } else {
-                        dialogText = dialog;
-                    }
-
-                    if (dialogCharacter !== 'none') {
-                        dialogText += ` ${dialogCharacter === 'custom' && customDialogCharacter ? customDialogCharacter : dialogCharacter}`;
-                    }
-
-                    if (voiceMood !== 'none') {
-                        dialogText += ` dengan suasana ${voiceMood === 'custom' && customVoiceMood ? customVoiceMood : voiceMood}`;
-                    }
-
-                    if (dialogInputs.length > 0) {
-                        dialogText += `: [${dialogInputs.join(', ')}]`;
-                    }
-
-                    if (document.getElementById('showAudioMixing')?.checked) {
-                        dialogText += ` (${dialogVolume}%)`;
-                    }
-
-                    // Add translation note if needed
-                    if (audioTranslation === 'english') {
-                        dialogText += ' (Keep original dialog)';
-                    } else if (audioTranslation === 'full_english') {
-                        dialogText += ' (Translate to English)';
-                    }
-
-                    audioDescription.push(dialogText);
-                }
-                
-                // Add music if present
-                if (backgroundMusic !== 'none') {
-                    let musicText = 'Musik ';
-                    if (backgroundMusic === 'custom' && customMusic) {
-                        musicText += customMusic;
-                    } else {
-                        musicText += backgroundMusic;
-                    }
-                    if (musicMood !== 'none') {
-                        musicText += ` dengan suasana ${musicMood === 'custom' && customMusicMood ? customMusicMood : musicMood}`;
-                    }
-                    if (document.getElementById('showAudioMixing')?.checked) {
-                        musicText += ` (${musicVolume}%)`;
-                    }
-                    audioDescription.push(musicText);
-                }
-                
-                // Add sound effects if present
-                if (soundEffects !== 'none') {
-                    let effectsText = '';
-                    if (soundEffects === 'custom' && customSoundEffects.length > 0) {
-                        effectsText = `efek suara: [${customSoundEffects.join(', ')}]`;
-                    } else {
-                        effectsText = `efek suara ${soundEffects}`;
-                    }
-                    if (document.getElementById('showAudioMixing')?.checked) {
-                        effectsText += ` (${effectsVolume}%)`;
-                    }
-                    audioDescription.push(effectsText);
-                }
-
-                // Add audio processing details only if section is visible
-                if (document.getElementById('showAudioProcessing')?.checked) {
-                    let processingDetails = [];
-                    if (equalizer !== 'none') {
-                        processingDetails.push(`Equalizer: ${equalizer}`);
-                    }
-                    if (compression !== 'none') {
-                        processingDetails.push(`Kompresi: ${compression}`);
-                    }
-                    if (reverb !== 'none') {
-                        processingDetails.push(`Reverb: ${reverb}`);
-                    }
-                    if (spatialAudio !== 'none') {
-                        processingDetails.push(`Spatial Audio: ${spatialAudio}`);
-                    }
-
-                    if (processingDetails.length > 0) {
-                        audioDescription.push(`Pengolahan Audio: ${processingDetails.join(', ')}`);
-                    }
-                }
-
-                // Combine all audio elements
-                const volumeText = volume === 'custom' && customVolume ? customVolume : volume;
-                let audioText = audioDescription.length > 0 
-                    ? `Audio: ${audioDescription.join(', ')}${document.getElementById('showAudioMixing')?.checked ? ` (Master: ${overallVolume}%)` : ''}`
-                    : 'Tanpa audio';
-
-                // Build the prompt with all inputs
-                let prompt = '';
-                
-                // Add subject and characteristics
-                if (subject && subject.trim() !== '') {
-                    prompt += `Buat video bergaya ${style} tentang ${subject}`;
-                } else {
-                    prompt += `Buat video bergaya ${style} tentang ${subjectCharacteristics}`;
-                }
-
-                // Add action and emotion
-                prompt += ` yang sedang ${mainAction} dengan emosi ${emotion}`;
-
-                // Add location and time
-                if (location && location.trim() !== '') {
-                    prompt += ` di ${location}`;
-                }
-                prompt += ` pada ${time} ${season} dengan cuaca ${weather}. \n\n`;
-
-                // Add camera details
-                prompt += `Gunakan pergerakan kamera ${cameraMovement} dari sudut ${cameraAngle} dengan lensa ${focalLength}. `;
-                prompt += `Berikan pencahayaan ${lighting} dan gradiasi warna ${colorGrading}. \n\n`;
-
-                // Add audio details
-                prompt += `${audioText}. \n\n`;
-
-                // Add technical specifications
-                prompt += `Spesifikasi teknis: Kualitas ${videoQuality}.`;
-
-                // Add additional details if present
-                if (additionalDetails) {
-                    prompt += ` \n\n${additionalDetails}`;
-                }
-
-                const generatedPromptDiv = document.getElementById('generatedPrompt');
-                const copyButton = document.getElementById('copyButton');
-                
-                if (!generatedPromptDiv) {
-                    throw new Error('Elemen output prompt tidak ditemukan');
-                }
-
-                // Show loading state
-                generatedPromptDiv.innerHTML = `
-                    <div class="flex items-center justify-center p-4">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                        <span class="ml-2 text-gray-600">Menerjemahkan prompt...</span>
-                    </div>
-                `;
-
-                // Extract dialogs and sound effects before translation
-                const dialogRegex = /\[([^\]]+)\]/g;
-                const dialogs = [];
-                let match;
-                while ((match = dialogRegex.exec(prompt)) !== null) {
-                    dialogs.push({
-                        original: match[0],
-                        text: match[1],
-                        context: prompt.substring(0, match.index).split('Audio:')[1]?.trim() || ''
-                    });
-                }
-
-                // Replace dialogs with placeholders
-                let promptForTranslation = prompt;
-                dialogs.forEach((dialog, index) => {
-                    promptForTranslation = promptForTranslation.replace(dialog.original, `[DIALOG_${index}]`);
-                });
-
-                // Translate the prompt using PromptHandler
-                const translatedPrompt = await promptHandler.translateText(promptForTranslation);
-
-                // Restore dialogs in translated prompt
-                let finalTranslatedPrompt = translatedPrompt;
-                dialogs.forEach((dialog, index) => {
-                    // Keep the original Indonesian dialog text and its context
-                    const dialogWithContext = dialog.context ? `${dialog.context}: ${dialog.original}` : dialog.original;
-                    // Replace the placeholder with the full dialog including context
-                    finalTranslatedPrompt = finalTranslatedPrompt.replace(`[DIALOG_${index}]`, dialogWithContext);
-                });
-
-                // Ensure audio section is properly formatted
-                if (finalTranslatedPrompt.includes('Audio:')) {
-                    const audioParts = finalTranslatedPrompt.split('Audio:');
-                    if (audioParts.length > 1) {
-                        const audioContent = audioParts[1].trim();
-                        if (!audioContent.includes('[')) {
-                            // If audio content doesn't have dialog, add it back
-                            const originalAudio = prompt.split('Audio:')[1]?.trim() || '';
-                            finalTranslatedPrompt = finalTranslatedPrompt.replace(
-                                `Audio: ${audioContent}`,
-                                `Audio: ${originalAudio}`
-                            );
-                        }
-                    }
-                }
-
-                // Create output HTML with better formatting
-                const outputHTML = `
-                    <div class="space-y-4">
-                        <div class="bg-blue-50 p-4 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-sm font-medium text-blue-800">Prompt dalam Bahasa Indonesia:</h3>
-                                <button type="button" class="copy-btn text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1 px-3 py-1 rounded border border-blue-200 hover:border-blue-400 transition-colors" data-text="${prompt.replace(/"/g, '&quot;').replace(/\n/g, '\\n')}">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                                    </svg>
-                                    <span>Salin</span>
-                                </button>
-                            </div>
-                            <p class="text-gray-800 whitespace-pre-line">${prompt}</p>
-                        </div>
-                        <div class="bg-green-50 p-4 rounded-lg">
-                            <div class="flex justify-between items-center mb-2">
-                                <h3 class="text-sm font-medium text-green-800">Prompt dalam Bahasa Inggris:</h3>
-                                <button type="button" class="copy-btn text-green-600 hover:text-green-800 text-sm flex items-center gap-1 px-3 py-1 rounded border border-green-200 hover:border-green-400 transition-colors" data-text="${finalTranslatedPrompt.replace(/"/g, '&quot;').replace(/\n/g, '\\n')}">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                                    </svg>
-                                    <span>Copy</span>
-                                </button>
-                            </div>
-                            <p class="text-gray-800 whitespace-pre-line">${finalTranslatedPrompt}</p>
-                        </div>
-                    </div>
-                `;
-
-                generatedPromptDiv.innerHTML = outputHTML;
-                
-                // Add click event listeners to copy buttons
-                document.querySelectorAll('.copy-btn').forEach(button => {
-                    button.addEventListener('click', async function() {
-                        const text = this.getAttribute('data-text');
-                        try {
-                            await navigator.clipboard.writeText(text);
-                            
-                            // Update button text to show success
-                            const span = this.querySelector('span');
-                            if (span) {
-                                const originalText = span.textContent;
-                                span.textContent = originalText === 'Salin' ? '✓ Tersalin!' : '✓ Copied!';
-                                this.classList.add('text-green-600');
-                                this.classList.add('border-green-400');
-                                
-                                // Reset button after 2 seconds
-                                setTimeout(() => {
-                                    span.textContent = originalText;
-                                    this.classList.remove('text-green-600');
-                                    this.classList.remove('border-green-400');
-                                }, 2000);
-                            }
-                        } catch (err) {
-                            console.error('Failed to copy text: ', err);
-                            
-                            // Show error state
-                            const span = this.querySelector('span');
-                            if (span) {
-                                const originalText = span.textContent;
-                                span.textContent = '❌ Gagal';
-                                this.classList.add('text-red-600');
-                                this.classList.add('border-red-400');
-                                
-                                // Reset button after 2 seconds
-                                setTimeout(() => {
-                                    span.textContent = originalText;
-                                    this.classList.remove('text-red-600');
-                                    this.classList.remove('border-red-400');
-                                }, 2000);
-                            }
-                        }
-                    });
-                });
-
-                // Remove the old copy button
-                const oldCopyButton = document.getElementById('copyButton');
-                if (oldCopyButton) {
-                    oldCopyButton.remove();
-                }
-
-                // Scroll to generated prompt only on mobile
-                if (window.innerWidth < 1024) {
-                    generatedPromptDiv.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'start' 
-                    });
-                }
-            } catch (error) {
-                console.error('Error generating prompt:', error);
-                const generatedPromptDiv = document.getElementById('generatedPrompt');
-                if (generatedPromptDiv) {
-                    generatedPromptDiv.innerHTML = `
-                        <div class="bg-red-50 p-4 rounded-lg">
-                            <h3 class="text-sm font-medium text-red-800 mb-2">Error:</h3>
-                            <p class="text-gray-800">${error.message}</p>
-                        </div>
-                    `;
-                }
-            }
-        }
-
-        // Function to add event listeners
-        function addInputListeners() {
-            // Get all form elements
-            const formElements = document.querySelectorAll('#promptForm input, #promptForm select, #promptForm textarea');
-            
-            // Add event listeners to each element
-            formElements.forEach(element => {
-                if (element.type === 'range') {
-                    element.addEventListener('input', function() {
-                        updateVolumeDisplay(this.id, this.id + 'Value');
-                        generatePrompt();
-                    });
-                } else {
-                    // Add both input and change events for better responsiveness
-                    element.addEventListener('input', generatePrompt);
-                    element.addEventListener('change', generatePrompt);
-                    element.addEventListener('keyup', generatePrompt);
-                }
-            });
-
-            // Add event listeners for custom inputs
-            const customInputs = {
-                'dialog': 'customDialogInput',
-                'dialogCharacter': 'customDialogCharacterInput',
-                'voiceMood': 'customVoiceMoodInput',
-                'backgroundMusic': 'customMusicInput',
-                'soundEffects': 'customSoundEffectsInput',
-                'volume': 'customVolumeInput'
-            };
-
-            Object.entries(customInputs).forEach(([selectId, inputId]) => {
-                const select = document.getElementById(selectId);
-                const input = document.getElementById(inputId);
-                if (select && input) {
-                    select.addEventListener('change', function() {
-                        input.classList.toggle('hidden', this.value !== 'custom');
-                        generatePrompt();
-                    });
-                    // Add event listeners to custom input fields
-                    input.addEventListener('input', generatePrompt);
-                    input.addEventListener('change', generatePrompt);
-                    input.addEventListener('keyup', generatePrompt);
-                }
-            });
-
-            // Add event listeners for dynamic inputs
-            const dialogInputs = document.getElementById('dialogInputs');
-            if (dialogInputs) {
-                dialogInputs.addEventListener('input', function(e) {
-                    if (e.target.tagName === 'INPUT') {
-                        generatePrompt();
-                    }
-                });
-            }
-
-            const soundEffectsInputs = document.getElementById('soundEffectsInputs');
-            if (soundEffectsInputs) {
-                soundEffectsInputs.addEventListener('input', function(e) {
-                    if (e.target.tagName === 'INPUT') {
-                        generatePrompt();
-                    }
-                });
-            }
-
-            // Add event listener for form submission
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize form elements
             const promptForm = document.getElementById('promptForm');
-            if (promptForm) {
-                promptForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    generatePrompt();
-                });
-            }
-
-            // Add event listeners for audio mixing and processing toggles
+            const generatedPrompt = document.getElementById('generatedPrompt');
+            const copyButton = document.getElementById('copyButton');
+            
+            // Toggle audio mixing section
             const showAudioMixing = document.getElementById('showAudioMixing');
-            if (showAudioMixing) {
+            const audioMixingContent = document.getElementById('audioMixingContent');
+            
+            if (showAudioMixing && audioMixingContent) {
                 showAudioMixing.addEventListener('change', function() {
-                    const audioMixingContent = document.getElementById('audioMixingContent');
-                    if (audioMixingContent) {
-                        audioMixingContent.classList.toggle('hidden', !this.checked);
-                    }
-                    generatePrompt();
+                    audioMixingContent.classList.toggle('hidden', !this.checked);
                 });
             }
-
+            
+            // Toggle audio processing section
             const showAudioProcessing = document.getElementById('showAudioProcessing');
-            if (showAudioProcessing) {
+            const audioProcessingContent = document.getElementById('audioProcessingContent');
+            
+            if (showAudioProcessing && audioProcessingContent) {
                 showAudioProcessing.addEventListener('change', function() {
-                    const audioProcessingContent = document.getElementById('audioProcessingContent');
-                    if (audioProcessingContent) {
-                        audioProcessingContent.classList.toggle('hidden', !this.checked);
-                    }
-                    generatePrompt();
+                    audioProcessingContent.classList.toggle('hidden', !this.checked);
                 });
             }
-        }
-
-        // Function to add new dialog input
-        window.addDialogInput = function() {
-            const dialogInputs = document.getElementById('dialogInputs');
-            if (dialogInputs) {
-                const newDialog = document.createElement('div');
-                newDialog.className = 'flex gap-4 items-start';
-                newDialog.innerHTML = `
-                    <div class="w-1/4">
-                        <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field dialog-character">
-                            ${Array.from(document.querySelectorAll('.dialog-character option')).map(opt => opt.outerHTML).join('')}
-                        </select>
-                    </div>
-                    <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field" placeholder="Masukkan dialog...">
-                    <button type="button" class="text-red-500 hover:text-red-700" onclick="removeDialog(this)">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
-                `;
-                dialogInputs.appendChild(newDialog);
-                
-                // Add event listeners to new elements
-                const newInput = newDialog.querySelector('input[type="text"]');
-                const newSelect = newDialog.querySelector('select');
-                
-                if (newInput) {
-                    newInput.addEventListener('input', generatePrompt);
-                    newInput.addEventListener('change', generatePrompt);
-                    newInput.addEventListener('keyup', generatePrompt);
-                }
-                if (newSelect) {
-                    newSelect.addEventListener('change', function() {
-                        if (this.value === 'custom') {
-                            const customName = prompt('Masukkan nama karakter:');
-                            if (customName) {
-                                const option = document.createElement('option');
-                                option.value = customName;
-                                option.text = customName;
-                                this.appendChild(option);
-                                this.value = customName;
-                            } else {
-                                this.value = 'Karakter 1';
-                            }
-                        }
-                        generatePrompt();
+            
+            // Update volume displays
+            function updateVolumeDisplay(inputId, displayId) {
+                const input = document.getElementById(inputId);
+                const display = document.getElementById(displayId);
+                if (input && display) {
+                    display.textContent = input.value + '%';
+                    input.addEventListener('input', function() {
+                        display.textContent = this.value + '%';
                     });
                 }
-                
-                generatePrompt();
             }
-        }
-
-        // Function to add new dialog character
-        window.addDialogCharacter = function() {
-            const customName = prompt('Masukkan nama karakter baru:');
-            if (customName) {
-                const characterOptions = document.querySelectorAll('.dialog-character');
-                characterOptions.forEach(select => {
-                    const option = document.createElement('option');
-                    option.value = customName;
-                    option.text = customName;
-                    select.appendChild(option);
-                });
-                generatePrompt();
-            }
-        }
-
-        // Function to remove dialog input
-        window.removeDialog = function(button) {
-            const dialogInputs = document.getElementById('dialogInputs');
-            if (dialogInputs && dialogInputs.children.length > 1) {
-                button.parentElement.remove();
-                generatePrompt();
-            }
-        }
-
-        // Function to remove sound effect input
-        window.removeSoundEffect = function(button) {
-            const soundEffectsInputs = document.getElementById('soundEffectsInputs');
-            if (soundEffectsInputs && soundEffectsInputs.children.length > 1) {
-                button.parentElement.remove();
-                generatePrompt();
-            }
-        }
-
-        // Initialize when the page loads
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Add all event listeners
-            addInputListeners();
             
-            // Set initial volume displays
             updateVolumeDisplay('dialogVolume', 'dialogVolumeValue');
             updateVolumeDisplay('musicVolume', 'musicVolumeValue');
             updateVolumeDisplay('effectsVolume', 'effectsVolumeValue');
             updateVolumeDisplay('overallVolume', 'overallVolumeValue');
             
-            // Initialize dropdown translations
-            await promptHandler.initializeDropdownTranslations();
+            // Handle custom inputs
+            function setupCustomInputs() {
+                const customInputs = {
+                    'dialog': 'customDialogInput',
+                    'dialogCharacter': 'customDialogCharacterInput',
+                    'voiceMood': 'customVoiceMoodInput',
+                    'backgroundMusic': 'customMusicInput',
+                    'soundEffects': 'customSoundEffectsInput',
+                    'volume': 'customVolumeInput'
+                };
+                
+                Object.entries(customInputs).forEach(([selectId, inputId]) => {
+                    const select = document.getElementById(selectId);
+                    const inputDiv = document.getElementById(inputId);
+                    if (select && inputDiv) {
+                        select.addEventListener('change', function() {
+                            inputDiv.classList.toggle('hidden', this.value !== 'custom');
+                        });
+                    }
+                });
+            }
             
-            // Generate initial prompt
-            generatePrompt();
+            setupCustomInputs();
             
-            // Setup character search functionality
-            setupCharacterSearch();
-        });
-
-        // Add animation to form sections
-        document.querySelectorAll('.bg-light\\/50').forEach((section, index) => {
-            section.style.animationDelay = `${index * 0.1}s`;
-            section.classList.add('animate-fade-in');
-        });
-
-        // Add resize handler for responsive behavior
-        window.addEventListener('resize', function() {
-            const outputSection = document.querySelector('.lg\\:sticky');
-            if (outputSection) {
-                if (window.innerWidth < 1024) {
-                    outputSection.style.position = 'relative';
-                } else {
-                    outputSection.style.position = 'sticky';
+            // Dialog inputs functionality
+            function addDialogInput() {
+                const dialogInputs = document.getElementById('dialogInputs');
+                if (dialogInputs) {
+                    const newDialog = document.createElement('div');
+                    newDialog.className = 'flex gap-4 items-start';
+                    newDialog.innerHTML = `
+                        <div class="w-1/4">
+                            <select class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field dialog-character">
+                                <option value="Karakter 1">Karakter 1</option>
+                                <option value="Karakter 2">Karakter 2</option>
+                                <option value="Karakter 3">Karakter 3</option>
+                                <option value="Narator">Narator</option>
+                                <option value="Pembawa Berita">Pembawa Berita</option>
+                                <option value="custom">Input Manual</option>
+                            </select>
+                        </div>
+                        <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary input-field" placeholder="Masukkan dialog...">
+                        <button type="button" class="text-red-500 hover:text-red-700" onclick="removeDialog(this)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    `;
+                    dialogInputs.appendChild(newDialog);
                 }
             }
-        });
-
-        // Add this to your existing JavaScript
-        function setupCharacterSearch() {
-            const searchInputs = document.querySelectorAll('.character-search');
-            searchInputs.forEach(input => {
-                input.addEventListener('input', function() {
-                    const searchTerm = this.value.toLowerCase();
-                    const select = this.nextElementSibling;
-                    const options = select.querySelectorAll('option');
-                    
-                    options.forEach(option => {
-                        const text = option.text.toLowerCase();
-                        if (text.includes(searchTerm) || option.value === 'custom') {
-                            option.style.display = '';
-                        } else {
-                            option.style.display = 'none';
-                        }
+            
+            window.addDialogInput = addDialogInput;
+            
+            function addDialogCharacter() {
+                const customName = prompt('Masukkan nama karakter baru:');
+                if (customName) {
+                    const characterOptions = document.querySelectorAll('.dialog-character');
+                    characterOptions.forEach(select => {
+                        const option = document.createElement('option');
+                        option.value = customName;
+                        option.textContent = customName;
+                        select.appendChild(option);
+                    });
+                }
+            }
+            
+            window.addDialogCharacter = addDialogCharacter;
+            
+            function removeDialog(button) {
+                const dialogInputs = document.getElementById('dialogInputs');
+                if (dialogInputs && dialogInputs.children.length > 1) {
+                    button.parentElement.remove();
+                }
+            }
+            
+            window.removeDialog = removeDialog;
+            
+            // Sound effects functionality
+            function addSoundEffect() {
+                const soundEffectsInputs = document.getElementById('soundEffectsInputs');
+                if (soundEffectsInputs) {
+                    const newEffect = document.createElement('div');
+                    newEffect.className = 'flex gap-2';
+                    newEffect.innerHTML = `
+                        <input type="text" class="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Deskripsikan efek suara...">
+                        <button type="button" class="text-red-500 hover:text-red-700" onclick="removeSoundEffect(this)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    `;
+                    soundEffectsInputs.appendChild(newEffect);
+                }
+            }
+            
+            window.addSoundEffect = addSoundEffect;
+            
+            function removeSoundEffect(button) {
+                const soundEffectsInputs = document.getElementById('soundEffectsInputs');
+                if (soundEffectsInputs && soundEffectsInputs.children.length > 0) {
+                    button.parentElement.remove();
+                }
+            }
+            
+            window.removeSoundEffect = removeSoundEffect;
+            
+            // Form submission
+            promptForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                generatePrompt();
+            });
+            
+            // Generate prompt function
+            function generatePrompt() {
+                // Get all form values
+                const subject = document.getElementById('subject').value;
+                const subjectCharacteristics = document.getElementById('subjectCharacteristics').value;
+                const mainAction = document.getElementById('mainAction').value;
+                const emotion = document.getElementById('emotion').value;
+                const location = document.getElementById('location').value;
+                const time = document.getElementById('time').value;
+                const weather = document.getElementById('weather').value;
+                const season = document.getElementById('season').value;
+                const style = document.getElementById('style').value;
+                const cameraMovement = document.getElementById('cameraMovement').value;
+                const cameraAngle = document.getElementById('cameraAngle').value;
+                const focalLength = document.getElementById('focalLength').value;
+                const lighting = document.getElementById('lighting').value;
+                const colorGrading = document.getElementById('colorGrading').value;
+                const videoQuality = document.getElementById('videoQuality').value;
+                const additionalDetails = document.getElementById('additionalDetails').value;
+                
+                // Audio settings
+                const dialog = document.getElementById('dialog').value;
+                const dialogCharacter = document.getElementById('dialogCharacter').value;
+                const voiceMood = document.getElementById('voiceMood').value;
+                const backgroundMusic = document.getElementById('backgroundMusic').value;
+                const soundEffects = document.getElementById('soundEffects').value;
+                const volume = document.getElementById('volume').value;
+                const audioTranslation = document.getElementById('audioTranslation').value;
+                
+                // Get dialog inputs
+                const dialogInputs = Array.from(document.querySelectorAll('#dialogInputs .flex')).map(div => {
+                    const character = div.querySelector('.dialog-character').value;
+                    const text = div.querySelector('input').value;
+                    return { character, text };
+                }).filter(item => item.text.trim() !== '');
+                
+                // Get sound effects
+                const customSoundEffects = Array.from(document.querySelectorAll('#soundEffectsInputs input')).map(input => input.value).filter(value => value.trim() !== '');
+                
+                // Build the prompt
+                let prompt = '';
+                
+                // Subject section
+                if (subject.trim() !== '') {
+                    prompt += `Buat video bergaya ${style} tentang ${subject}`;
+                } else {
+                    prompt += `Buat video bergaya ${style} tentang ${subjectCharacteristics}`;
+                }
+                
+                // Action and emotion
+                prompt += ` yang sedang ${mainAction} dengan emosi ${emotion}`;
+                
+                // Environment
+                if (location.trim() !== '') {
+                    prompt += ` di ${location}`;
+                }
+                prompt += ` pada ${time} ${season} dengan cuaca ${weather}.\n\n`;
+                
+                // Cinematography
+                prompt += `Gunakan pergerakan kamera ${cameraMovement} dari sudut ${cameraAngle} dengan lensa ${focalLength}. `;
+                prompt += `Berikan pencahayaan ${lighting} dan gradiasi warna ${colorGrading}.\n\n`;
+                
+                // Audio
+                let audioText = '';
+                if (dialog !== 'none') {
+                    audioText += `Dialog: ${dialog}`;
+                    if (dialogCharacter !== 'none') {
+                        audioText += ` (${dialogCharacter})`;
+                    }
+                    if (voiceMood !== 'none') {
+                        audioText += ` dengan suasana ${voiceMood}`;
+                    }
+                    if (dialogInputs.length > 0) {
+                        audioText += `:\n${dialogInputs.map(d => `- ${d.character}: "${d.text}"`).join('\n')}`;
+                    }
+                }
+                
+                if (backgroundMusic !== 'none') {
+                    if (audioText !== '') audioText += '\n';
+                    audioText += `Musik Latar: ${backgroundMusic}`;
+                }
+                
+                if (soundEffects !== 'none') {
+                    if (audioText !== '') audioText += '\n';
+                    if (soundEffects === 'custom' && customSoundEffects.length > 0) {
+                        audioText += `Efek Suara: ${customSoundEffects.join(', ')}`;
+                    } else {
+                        audioText += `Efek Suara: ${soundEffects}`;
+                    }
+                }
+                
+                if (audioText === '') {
+                    audioText = 'Tanpa audio';
+                }
+                
+                prompt += `${audioText}\n\n`;
+                
+                // Technical details
+                prompt += `Spesifikasi teknis: Kualitas ${videoQuality}.`;
+                
+                // Additional details
+                if (additionalDetails.trim() !== '') {
+                    prompt += `\n\n${additionalDetails}`;
+                }
+                
+                // Display the prompt
+                generatedPrompt.innerHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h3 class="text-sm font-medium text-blue-800 mb-2">Prompt dalam Bahasa Indonesia:</h3>
+                            <p class="text-gray-800 whitespace-pre-line">${prompt}</p>
+                            <button class="copy-btn mt-2 text-blue-600 hover:text-blue-800 text-sm flex items-center gap-1 px-3 py-1 rounded border border-blue-200 hover:border-blue-400 transition-colors" data-text="${prompt.replace(/"/g, '&quot;').replace(/\n/g, '\\n')}">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                                </svg>
+                                <span>Salin</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Show copy button
+                copyButton.classList.remove('hidden');
+                
+                // Add click event to copy button
+                copyButton.addEventListener('click', function() {
+                    navigator.clipboard.writeText(prompt).then(() => {
+                        const originalText = copyButton.textContent;
+                        copyButton.textContent = '✓ Tersalin!';
+                        copyButton.classList.add('bg-green-100', 'text-green-800');
+                        setTimeout(() => {
+                            copyButton.textContent = originalText;
+                            copyButton.classList.remove('bg-green-100', 'text-green-800');
+                        }, 2000);
                     });
                 });
-            });
-        }
+                
+                // Add click events to all copy buttons
+                document.querySelectorAll('.copy-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const text = this.getAttribute('data-text').replace(/\\n/g, '\n').replace(/&quot;/g, '"');
+                        navigator.clipboard.writeText(text).then(() => {
+                            const span = this.querySelector('span');
+                            if (span) {
+                                const originalText = span.textContent;
+                                span.textContent = '✓ Tersalin!';
+                                this.classList.add('bg-green-100', 'text-green-800', 'border-green-400');
+                                setTimeout(() => {
+                                    span.textContent = originalText;
+                                    this.classList.remove('bg-green-100', 'text-green-800', 'border-green-400');
+                                }, 2000);
+                            }
+                        });
+                    });
+                });
+            }
+            
+            window.generatePrompt = generatePrompt;
+            
+            // Initialize with a default prompt
+            generatePrompt();
+        });
     </script>
-</body>
-</html> e="text"],
-    input[type="number"],
-    select,
-    textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      font-size: 14px;
-      transition: var(--transition);
-    }
-    
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
-    }
-    
-    input[type="color"] {
-      width: 40px;
-      height: 40px;
-      padding: 2px;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-    }
-    
-    input[type="checkbox"] {
-      margin-right: 8px;
-      transform: scale(1.1);
-    }
-    
-    /* Buttons */
-    .btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: 500;
-      text-align: center;
-      transition: var(--transition);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn:hover {
-      background-color: var(--secondary-color);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-    
-    .btn-secondary {
-      background-color: #6c757d;
-    }
-    
-    .btn-secondary:hover {
-      background-color: #5a6268;
-    }
-    
-    .btn-success {
-      background-color: var(--success-color);
-    }
-    
-    .btn-success:hover {
-      background-color: #3d8b40;
-    }
-    
-    .btn-danger {
-      background-color: var(--danger-color);
-    }
-    
-    .btn-danger:hover {
-      background-color: #d32f2f;
-    }
-    
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-    
-    /* Cards */
-    .card {
-      background: white;
-      border-radius: var(--border-radius);
-      padding: 20px;
-      box-shadow: var(--box-shadow);
-    }
-    
-    /* Text editor */
-    .text-editor {
-      position: relative;
-    }
-    
-    #inputText {
-      width: 100%;
-      min-height: 300px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      font-size: 15px;
-      line-height: 1.6;
-      resize: vertical;
-    }
-    
-    .editor-toolbar {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-    
-    /* File upload */
-    .file-upload {
-      border: 2px dashed #ccc;
-      border-radius: var(--border-radius);
-      padding: 30px;
-      text-align: center;
-      cursor: pointer;
-      transition: var(--transition);
-      margin-bottom: 15px;
-    }
-    
-    .file-upload:hover {
-      border-color: var(--primary-color);
-      background-color: rgba(67, 97, 238, 0.05);
-    }
-    
-    .file-upload i {
-      font-size: 40px;
-      color: var(--primary-color);
-      margin-bottom: 10px;
-    }
-    
-    .file-upload p {
-      margin-bottom: 5px;
-    }
-    
-    .file-upload small {
-      color: #6c757d;
-    }
-    
-    /* Preview */
-    .preview-container {
-      position: relative;
-    }
-    
-    #preview {
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      background: white;
-      min-height: 400px;
-      padding: 20px;
-      overflow-y: auto;
-      box-shadow: var(--box-shadow);
-    }
-    
-    .page {
-      position: relative;
-      padding: 40px;
-      margin-bottom: 30px;
-      border-radius: var(--border-radius);
-      background: white;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      min-height: 800px;
-      max-width: 600px;
-      margin: 0 auto;
-      overflow: visible;
-      break-after: page;
-    }
-    
-    .page-cover {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      height: 100%;
-    }
-    
-    .page-cover img {
-      max-width: 80%;
-      max-height: 400px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-    
-    .content {
-      white-space: pre-wrap;
-      line-height: 1.8;
-      margin: 0 0 60px;
-      text-align: justify;
-      hyphens: auto;
-    }
-    
-    .footer {
-      position: absolute;
-      bottom: 40px;
-      left: 40px;
-      right: 40px;
-      font-size: 12px;
-      color: #666;
-      display: flex;
-      justify-content: space-between;
-      padding: 10px;
-      border-top: 1px solid #eee;
-      background-color: white;
-      z-index: 10;
-      box-shadow: 0 -2px 5px rgba(0,0,0,0.05);
-    }
-    
-    /* Tabs */
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 20px;
-    }
-    
-    .tab {
-      padding: 10px 20px;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: var(--transition);
-    }
-    
-    .tab.active {
-      border-bottom-color: var(--primary-color);
-      color: var(--primary-color);
-      font-weight: 500;
-    }
-    
-    .tab-content {
-      display: none;
-    }
-    
-    .tab-content.active {
-      display: block;
-    }
-    
-    /* Responsive */
-    @media (max-width: 992px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-      
-      .sidebar {
-        position: static;
-      }
-    }
-    
-    /* Custom scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: #aaa;
-      border-radius: 4px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: #888;
-    }
-    
-    /* Loading spinner */
-    .spinner {
-      display: none;
-      width: 40px;
-      height: 40px;
-      margin: 20px auto;
-      border: 4px solid rgba(0, 0, 0, 0.1);
-      border-radius: 50%;
-      border-top-color: var(--primary-color);
-      animation: spin 1s ease-in-out infinite;
-    }
-    
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    
-    /* Notification */
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      padding: 15px 20px;
-      background-color: var(--success-color);
-      color: white;
-      border-radius: var(--border-radius);
-      box-shadow: var(--box-shadow);
-      z-index: 1000;
-      transform: translateX(200%);
-      transition: transform 0.3s ease;
-    }
-    
-    .notification.show {
-      transform: translateX(0);
-    }
-    
-    .notification.error {
-      background-color: var(--danger-color);
-    }
-    
-    .notification.warning {
-      background-color: var(--warning-color);
-    }
-    
-    /* File upload dropdown */
-    .file-upload-container {
-      position: relative;
-      margin-bottom: 15px;
-    }
-    
-    .file-type-dropdown {
-      position: absolute;
-      top: 0;
-      right: 0;
-      z-index: 10;
-    }
-    
-    .dropdown-btn {
-      padding: 8px 12px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      font-size: 14px;
-    }
-    
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      background-color: white;
-      min-width: 160px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-      border-radius: var(--border-radius);
-      z-index: 11;
-    }
-    
-    .dropdown-content a {
-      color: var(--dark-color);
-      padding: 8px 12px;
-      text-decoration: none;
-      display: block;
-      font-size: 14px;
-    }
-    
-    .dropdown-content a:hover {
-      background-color: #f1f1f1;
-    }
-    
-    .show-dropdown {
-      display: block;
-    }
-    
-    .cover-upload-btn {
-      display: block;
-      width: 100%;
-      padding: 10px;
-      background: var(--primary-color);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      text-align: center;
-      margin-top: 10px;
-    }
-    .page-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-    }
-    
-    .page-content {
-      padding-bottom: 80px; /* Make space for footer */
-    }
-    
-    .footer {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 40px;
-      font-size: 12px;
-      color: #666;
-      border-top: 1px solid #eee;
-      background-color: white;
-      z-index: 10;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="header-content">
-      <h1>Ebook Creator Pro</h1>
-      <div class="btn-group">
-        <button id="generateBtn" class="btn btn-success">Generate Ebook</button>
-        <button id="exportBtn" class="btn btn-secondary">Export</button>
-      </div>
-    </div>
-  </header>
-  
-  <div class="container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar-section">
-        <h3>Import Content</h3>
-        <div class="file-upload-container">
-          <div class="file-upload" id="dropZone">
-            <i>📄</i>
-            <p>Drag & drop file here</p>
-            <small>or click to browse files</small>
-          </div>
-          <div class="file-type-dropdown">
-            <button class="dropdown-btn" onclick="toggleDropdown()">TXT ▼</button>
-            <div class="dropdown-content" id="fileTypeDropdown">
-              <a href="#" onclick="setFileType('txt')">TXT File</a>
-              <a href="#" onclick="setFileType('docx')">Word Document</a>
-            </div>
-          </div>
-        </div>
-        <input type="file" id="txtFile" accept=".txt" style="display:none">
-        <input type="file" id="wordFile" accept=".docx,.doc" style="display:none">
-      </div>
-      
-      <div class="sidebar-section">
-        <h3>Book Metadata</h3>
-        <div class="form-group">
-          <label for="bookTitle">Title</label>
-          <input type="text" id="bookTitle" placeholder="Book Title">
-        </div>
-        <div class="form-group">
-          <label for="authorName">Author</label>
-          <input type="text" id="authorName" placeholder="Author Name">
-        </div>
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="includeMeta" checked>
-            Include in ebook
-          </label>
-        </div>
-      </div>
-      
-      <div class="sidebar-section">
-        <h3>Cover Image</h3>
-        <div id="coverDropZone" class="file-upload">
-          <i>🖼️</i>
-          <p>Click to upload cover image</p>
-          <small>JPG, PNG (max 5MB)</small>
-        </div>
-        <button class="cover-upload-btn" onclick="document.getElementById('imgInput').click()">
-          Select Cover Image
-        </button>
-        <input type="file" id="imgInput" accept="image/*" style="display:none">
-        <div id="coverPreview" style="margin-top: 15px;"></div>
-      </div>
-      
-      <div class="sidebar-section">
-        <h3>Page Settings</h3>
-        <div class="form-group">
-          <label for="pageWidth">Width (px)</label>
-          <input type="number" id="pageWidth" value="600" min="300" max="1200">
-        </div>
-        <div class="form-group">
-          <label for="pageHeight">Height (px)</label>
-          <input type="number" id="pageHeight" value="800" min="400" max="2000">
-        </div>
-        <div class="form-group">
-          <label for="wordCount">Words per page</label>
-          <input type="number" id="wordCount" value="500" min="100" max="2000">
-        </div>
-      </div>
-      
-      <div class="sidebar-section">
-        <h3>Typography</h3>
-        <div class="form-group">
-          <label for="fontFamily">Font Family</label>
-          <select id="fontFamily">
-            <option value="'Roboto', sans-serif">Roboto (Sans-serif)</option>
-            <option value="'Merriweather', serif">Merriweather (Serif)</option>
-            <option value="'Source Code Pro', monospace">Source Code Pro (Monospace)</option>
-            <option value="Arial, sans-serif">Arial</option>
-            <option value="'Times New Roman', serif">Times New Roman</option>
-            <option value="Georgia, serif">Georgia</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="fontSize">Font Size (px)</label>
-          <input type="number" id="fontSize" value="14" min="8" max="36">
-        </div>
-        <div class="form-group">
-          <label for="lineHeight">Line Height</label>
-          <input type="number" id="lineHeight" value="1.6" min="1" max="3" step="0.1">
-        </div>
-        <div class="form-group">
-          <label for="txtColor">Text Color</label>
-          <input type="color" id="txtColor" value="#333333">
-        </div>
-      </div>
-      
-      <div class="sidebar-section">
-        <h3>Margins & Spacing</h3>
-        <div class="form-group">
-          <label for="marginTop">Top (px)</label>
-          <input type="number" id="marginTop" value="40" min="0" max="200">
-        </div>
-        <div class="form-group">
-          <label for="marginBottom">Bottom (px)</label>
-          <input type="number" id="marginBottom" value="60" min="0" max="200">
-        </div>
-        <div class="form-group">
-          <label for="marginLeft">Left (px)</label>
-          <input type="number" id="marginLeft" value="40" min="0" max="200">
-        </div>
-        <div class="form-group">
-          <label for="marginRight">Right (px)</label>
-          <input type="number" id="marginRight" value="40" min="0" max="200">
-        </div>
-      </div>
-      
-      <div class="sidebar-section">
-        <h3>Export Options</h3>
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="exportPDF" checked>
-            Export as PDF
-          </label>
-        </div>
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="exportPNG">
-            Export as PNG
-          </label>
-        </div>
-        <div class="form-group">
-          <label>
-            <input type="checkbox" id="useWatermark">
-            Add Watermark
-          </label>
-        </div>
-        <div class="form-group">
-          <label for="watermarkText">Watermark Text</label>
-          <input type="text" id="watermarkText" value="Sample Watermark">
-        </div>
-        <div class="form-group">
-          <label for="fileNamePattern">File Name Pattern</label>
-          <input type="text" id="fileNamePattern" value="{title}" placeholder="e.g. {title}">
-          <small>Available variables: {title}, {author}, {date}</small>
-        </div>
-      </div>
-    </aside>
-    
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="card">
-        <div class="tabs">
-          <div class="tab active" data-tab="editor">Editor</div>
-          <div class="tab" data-tab="preview">Preview</div>
-        </div>
-        
-        <div class="tab-content active" id="editor">
-          <div class="editor-toolbar">
-            <button class="btn" onclick="cleanText()">Clean Text</button>
-            <button class="btn" onclick="removeSymbols()">Remove Symbols</button>
-            <button class="btn" onclick="formatParagraphs()">Format Paragraphs</button>
-          </div>
-          <textarea id="inputText" placeholder="Paste your text here or upload a file..."></textarea>
-        </div>
-        
-        <div class="tab-content" id="preview">
-          <div id="preview"></div>
-          <div class="spinner" id="previewSpinner"></div>
-        </div>
-      </div>
-      
-      <div class="card">
-        <h3>Export Settings</h3>
-        <div class="btn-group">
-          <button class="btn btn-success" onclick="generateEbook()">Generate Preview</button>
-          <button class="btn btn-secondary" onclick="exportEbook()">Export Ebook</button>
-        </div>
-      </div>
-    </main>
-  </div>
-  
-  <div class="notification" id="notification"></div>
-
-  <script>
-    // Global variables
-let originalText = "";
-let currentText = "";
-let coverImageSrc = "";
-let pages = [];
-let currentFileType = 'txt';
-
-// DOM elements
-const dropZone = document.getElementById("dropZone");
-const coverDropZone = document.getElementById("coverDropZone");
-const txtFileInput = document.getElementById("txtFile");
-const wordFileInput = document.getElementById("wordFile");
-const imgInput = document.getElementById("imgInput");
-const previewSpinner = document.getElementById("previewSpinner");
-const notification = document.getElementById("notification");
-
-// Initialize the application
-document.addEventListener("DOMContentLoaded", function() {
-  setupEventListeners();
-  setupTabs();
-});
-
-function setupEventListeners() {
-  // Text file upload
-  dropZone.addEventListener("click", () => {
-    if (currentFileType === 'txt') {
-      txtFileInput.click();
-    } else {
-      wordFileInput.click();
-    }
-  });
-  
-  txtFileInput.addEventListener("change", handleFileUpload);
-  wordFileInput.addEventListener("change", handleFileUpload);
-  
-  // Cover image upload
-  coverDropZone.addEventListener("click", () => imgInput.click());
-  imgInput.addEventListener("change", handleCoverUpload);
-  
-  // Drag and drop handlers
-  setupDragAndDrop();
-}
-
-function setupDragAndDrop() {
-  // Text files
-  dropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    dropZone.style.borderColor = "#4361ee";
-    dropZone.style.backgroundColor = "rgba(67, 97, 238, 0.05)";
-  });
-  
-  dropZone.addEventListener("dragleave", () => {
-    dropZone.style.borderColor = "#ccc";
-    dropZone.style.backgroundColor = "transparent";
-  });
-  
-  dropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    dropZone.style.borderColor = "#ccc";
-    dropZone.style.backgroundColor = "transparent";
-    
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    
-    if (currentFileType === 'txt' && file.type === "text/plain") {
-      txtFileInput.files = e.dataTransfer.files;
-      handleFileUpload({ target: txtFileInput });
-    } 
-    else if (currentFileType === 'docx' && 
-            (file.name.endsWith('.docx') || file.name.endsWith('.doc'))) {
-      wordFileInput.files = e.dataTransfer.files;
-      handleFileUpload({ target: wordFileInput });
-    }
-    else {
-      showNotification(`Please upload a valid ${currentFileType === 'txt' ? '.txt' : 'Word'} file`, "error");
-    }
-  });
-  
-  // Cover images
-  coverDropZone.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    coverDropZone.style.borderColor = "#4361ee";
-    coverDropZone.style.backgroundColor = "rgba(67, 97, 238, 0.05)";
-  });
-  
-  coverDropZone.addEventListener("dragleave", () => {
-    coverDropZone.style.borderColor = "#ccc";
-    coverDropZone.style.backgroundColor = "transparent";
-  });
-  
-  coverDropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    coverDropZone.style.borderColor = "#ccc";
-    coverDropZone.style.backgroundColor = "transparent";
-    
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith("image/")) {
-      imgInput.files = e.dataTransfer.files;
-      handleCoverUpload({ target: imgInput });
-    } else {
-      showNotification("Please upload a valid image file", "error");
-    }
-  });
-}
-
-function setupTabs() {
-  const tabs = document.querySelectorAll(".tab");
-  tabs.forEach(tab => {
-    tab.addEventListener("click", function() {
-      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-      document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
-      
-      this.classList.add("active");
-      const tabId = this.getAttribute("data-tab");
-      document.getElementById(tabId).classList.add("active");
-    });
-  });
-}
-
-function toggleDropdown() {
-  document.getElementById("fileTypeDropdown").classList.toggle("show-dropdown");
-}
-
-function setFileType(type) {
-  currentFileType = type;
-  document.querySelector(".dropdown-btn").textContent = 
-    type === 'txt' ? 'TXT ▼' : 'Word ▼';
-  toggleDropdown();
-}
-
-function showNotification(message, type = "success") {
-  notification.textContent = message;
-  notification.className = "notification " + type;
-  notification.classList.add("show");
-  
-  setTimeout(() => {
-    notification.classList.remove("show");
-  }, 3000);
-}
-
-async function handleFileUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  
-  if (file.size > 5 * 1024 * 1024) {
-    showNotification("File size should be less than 5MB", "error");
-    return;
-  }
-  
-  const reader = new FileReader();
-  
-  if (currentFileType === 'docx') {
-    try {
-      const arrayBuffer = await readFileAsArrayBuffer(file);
-      const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
-      
-      originalText = result.value;
-      document.getElementById("inputText").value = originalText;
-      
-      if (!document.getElementById("bookTitle").value) {
-        const firstLine = originalText.split('\n')[0].trim();
-        if (firstLine.length > 0 && firstLine.length < 100) {
-          document.getElementById("bookTitle").value = firstLine;
-        }
-      }
-      
-      showNotification("Word document processed successfully!");
-    } catch (error) {
-      showNotification("Error processing Word document: " + error.message, "error");
-      console.error(error);
-    }
-  } else {
-    reader.onload = function(e) {
-      originalText = e.target.result;
-      document.getElementById("inputText").value = originalText;
-      
-      if (!document.getElementById("bookTitle").value) {
-        const firstLine = originalText.split('\n')[0].trim();
-        if (firstLine.length > 0 && firstLine.length < 100) {
-          document.getElementById("bookTitle").value = firstLine;
-        }
-      }
-      
-      showNotification("Text file loaded successfully!");
-    };
-    reader.readAsText(file);
-  }
-}
-
-function readFileAsArrayBuffer(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsArrayBuffer(file);
-  });
-}
-
-function handleCoverUpload(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  
-  if (file.size > 5 * 1024 * 1024) {
-    showNotification("Image size should be less than 5MB", "error");
-    return;
-  }
-  
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    coverImageSrc = e.target.result;
-    const preview = document.getElementById("coverPreview");
-    preview.innerHTML = `
-      <img src="${coverImageSrc}" alt="Cover Preview" style="max-width:100%; border-radius:4px; box-shadow:0 2px 5px rgba(0,0,0,0.1)">
-      <button class="btn btn-danger" style="margin-top:10px; width:100%" onclick="removeCover()">Remove Cover</button>
-    `;
-    showNotification("Cover image uploaded!");
-  };
-  reader.readAsDataURL(file);
-}
-
-function removeCover() {
-  coverImageSrc = "";
-  document.getElementById("coverPreview").innerHTML = "";
-  imgInput.value = "";
-  showNotification("Cover image removed");
-}
-
-// Text cleaning functions
-function cleanText() {
-  const input = document.getElementById("inputText").value;
-  if (!input.trim()) {
-    showNotification("Please paste or upload some text first", "error");
-    return;
-  }
-  
-  let cleaned = input
-    .replace(/\r\n/g, '\n')
-    .replace(/\n{3,}/g, '\n\n')
-    .replace(/[^\S\n]{2,}/g, ' ')
-    .trim();
-  
-  document.getElementById("inputText").value = cleaned;
-  showNotification("Text cleaned successfully!");
-}
-
-function removeSymbols() {
-  const input = document.getElementById("inputText").value;
-  if (!input.trim()) {
-    showNotification("Please paste or upload some text first", "error");
-    return;
-  }
-  
-  const symbolsToRemove = /[`~^*+=|<>{}_—–•▪■□▢▣▤▥▦▧▨▩▪▫▬▭▮▯☀☁☂☃☄★☆☇☈☉☊☋☌☍☎☏☐☑☒☓☔☕☖☗☘☙☚☛☜☝☞☟☠☡☢☣☤☥☦☧☨☩☪☫☬☭☮☯☰☱☲☳☴☵☶☷☸☹☺☻☼☽☾☿♀♁♂♃♄♅♆♇♈♉♊♋♌♍♎♏♐♑♒♓♔♕♖♗♘♙♚♛♜♝♞♟♠♡♢♣♤♥♦♧♨♩♪♫♬♭♮♯♰♱♲♳♴♵♶♷♸♹♺♻♼♽♾♿⚀⚁⚂⚃⚄⚅⚆⚇⚈⚉⚊⚋⚌⚍⚎⚏⚐⚑⚒⚓⚔⚕⚖⚗⚘⚙⚚⚛⚜⚝⚞⚟⚠⚡⚢⚣⚤⚥⚦⚧⚨⚩⚪⚫⚬⚭⚮⚯⚰⚱⚲⚳⚴⚵⚶⚷⚸⚹⚺⚻⚼⚽⚾⚿⛀⛁⛂⛃⛄⛅⛆⛇⛈⛉⛊⛋⛌⛍⛎⛏⛐⛑⛒⛓⛔⛕⛖⛗⛘⛙⛚⛛⛜⛝⛞⛟⛠⛡⛢⛣⛤⛥⛦⛧⛨⛩⛪⛫⛬⛭⛮⛯⛰⛱⛲⛳⛴⛵⛶⛷⛸⛹⛺⛻⛼⛽⛾⛿]/g;
-  
-  let cleaned = input.replace(symbolsToRemove, '');
-  document.getElementById("inputText").value = cleaned;
-  showNotification("Symbols removed successfully!");
-}
-
-function formatParagraphs() {
-  const input = document.getElementById("inputText").value;
-  if (!input.trim()) {
-    showNotification("Please paste or upload some text first", "error");
-    return;
-  }
-  
-  let formatted = input.split('\n')
-    .map(para => para.trim())
-    .filter(para => para.length > 0)
-    .join('\n\n');
-  
-  document.getElementById("inputText").value = formatted;
-  showNotification("Paragraphs formatted successfully!");
-}
-
-// Ebook generation functions
-function generateEbook() {
-  const input = document.getElementById("inputText").value;
-  if (!input.trim()) {
-    showNotification("Please paste or upload some text first", "error");
-    return;
-  }
-  
-  previewSpinner.style.display = "block";
-  document.getElementById("preview").innerHTML = "";
-  
-  setTimeout(() => {
-    try {
-      processTextAndGeneratePages(input);
-      previewSpinner.style.display = "none";
-      showNotification("Ebook generated successfully!");
-      document.querySelector('.tab[data-tab="preview"]').click();
-    } catch (error) {
-      previewSpinner.style.display = "none";
-      showNotification("Error generating ebook: " + error.message, "error");
-      console.error(error);
-    }
-  }, 100);
-}
-
-function processTextAndGeneratePages(input) {
-  currentText = cleanTextForProcessing(input);
-  
-  const bookTitle = document.getElementById("bookTitle").value || "Untitled";
-  const authorName = document.getElementById("authorName").value || "Unknown Author";
-  const includeMeta = document.getElementById("includeMeta").checked;
-  const wordsPerPage = parseInt(document.getElementById("wordCount").value) || 500;
-  const fontFamily = document.getElementById("fontFamily").value;
-  const fontSize = document.getElementById("fontSize").value + "px";
-  const lineHeight = document.getElementById("lineHeight").value;
-  const txtColor = document.getElementById("txtColor").value;
-  
-  const marginTop = document.getElementById("marginTop").value + "px";
-  const marginBottom = document.getElementById("marginBottom").value + "px";
-  const marginLeft = document.getElementById("marginLeft").value + "px";
-  const marginRight = document.getElementById("marginRight").value + "px";
-  
-  const pageWidth = document.getElementById("pageWidth").value + "px";
-  const pageHeight = document.getElementById("pageHeight").value + "px";
-  
-  const preview = document.getElementById("preview");
-  preview.innerHTML = "";
-  
-  // Create cover page if image exists
-  if (coverImageSrc) {
-    const coverPage = document.createElement("div");
-    coverPage.className = "page";
-    coverPage.style.fontFamily = fontFamily;
-    coverPage.style.fontSize = fontSize;
-    coverPage.style.color = txtColor;
-    coverPage.style.width = pageWidth;
-    coverPage.style.minHeight = pageHeight;
-    coverPage.style.lineHeight = lineHeight;
-    
-    coverPage.innerHTML = `
-      <div class="page-cover">
-        <img src="${coverImageSrc}" alt="${bookTitle}">
-        ${includeMeta ? `<h2>${bookTitle}</h2><p>by ${authorName}</p>` : ''}
-      </div>
-    `;
-    
-    preview.appendChild(coverPage);
-  }
-  
-  // Split into chapters
-  const chapters = autoDetectChapters(currentText);
-  
-  // Process each chapter
-  pages = [];
-  chapters.forEach((chapter, chapterIndex) => {
-    const chapterPages = splitIntoPages(chapter.content, wordsPerPage);
-    
-    chapterPages.forEach((page, pageIndex) => {
-      const pageElement = document.createElement("div");
-      pageElement.className = "page";
-      pageElement.style.fontFamily = fontFamily;
-      pageElement.style.fontSize = fontSize;
-      pageElement.style.color = txtColor;
-      pageElement.style.width = pageWidth;
-      pageElement.style.minHeight = pageHeight;
-      pageElement.style.lineHeight = lineHeight;
-      pageElement.style.padding = `${marginTop} ${marginRight} ${marginBottom} ${marginLeft}`;
-      
-      // Create container for content and footer
-      const pageContainer = document.createElement("div");
-      pageContainer.className = "page-container";
-      
-      // Add content
-      const contentDiv = document.createElement("div");
-      contentDiv.className = "page-content";
-      
-      // Chapter title for first page of chapter
-      if (pageIndex === 0 && chapter.title !== "Untitled") {
-        contentDiv.innerHTML += `<h2 style="text-align:center;margin-bottom:30px">${chapter.title}</h2>`;
-      }
-      
-      contentDiv.innerHTML += `<div class="content">${page.content.replace(/\n/g, "<br>")}</div>`;
-      
-      // Add footer
-      if (includeMeta) {
-        const footerDiv = document.createElement("div");
-        footerDiv.className = "footer";
-        footerDiv.innerHTML = `
-          <span>${bookTitle} - ${authorName}</span>
-          <span>Page ${pages.length + 1}</span>
-        `;
-        pageContainer.appendChild(footerDiv);
-      }
-      
-      pageContainer.insertBefore(contentDiv, pageContainer.firstChild);
-      pageElement.appendChild(pageContainer);
-      preview.appendChild(pageElement);
-      
-      // Store page data for export
-      pages.push({
-        element: pageElement,
-        content: page.content,
-        pageNumber: pages.length + 1
-      });
-    });
-  });
-}
-
-function cleanTextForProcessing(text) {
-  return text
-    .replace(/\r\n/g, '\n')
-    .replace(/[`~^*+=|<>{}_—–]/g, '')
-    .replace(/\n{3,}/g, '\n\n')
-    .replace(/[^\S\n]{2,}/g, ' ')
-    .trim();
-}
-
-function autoDetectChapters(text) {
-  const lines = text.split(/\n/);
-  const result = [];
-  let currentChapter = { title: "Untitled", content: [] };
-  
-  for (let line of lines) {
-    const match = line.match(/^#\s*(.+?)\s*$/);
-    if (match) {
-      if (currentChapter.content.length > 0 || currentChapter.title !== "Untitled") {
-        result.push(currentChapter);
-      }
-      currentChapter = { title: match[1].trim(), content: [] };
-    } else {
-      currentChapter.content.push(line);
-    }
-  }
-  
-  if (currentChapter.content.length > 0 || currentChapter.title !== "Untitled") {
-    result.push(currentChapter);
-  }
-  
-  return result.length > 0 ? result : [{ title: "Untitled", content: lines }];
-}
-
-function splitIntoPages(content, wordsPerPage = 500) {
-  const paragraphs = content.join('\n').split(/\n{2,}/).filter(p => p.trim().length > 0);
-  const result = [];
-  let currentPage = { content: [], wordCount: 0 };
-  
-  for (let para of paragraphs) {
-    const paraWords = para.trim().split(/\s+/);
-    const wordCount = paraWords.length;
-    
-    if (currentPage.wordCount + wordCount > wordsPerPage && currentPage.content.length > 0) {
-      result.push({
-        content: currentPage.content.join("\n\n"),
-        wordCount: currentPage.wordCount
-      });
-      currentPage = { content: [para], wordCount: wordCount };
-    } else {
-      currentPage.content.push(para);
-      currentPage.wordCount += wordCount;
-    }
-  }
-  
-  if (currentPage.content.length > 0) {
-    result.push({
-      content: currentPage.content.join("\n\n"),
-      wordCount: currentPage.wordCount
-    });
-  }
-  
-  return result;
-}
-
-// Export functions
-async function exportEbook() {
-  if (pages.length === 0) {
-    showNotification("Please generate the ebook first", "error");
-    return;
-  }
-  
-  const exportPDF = document.getElementById("exportPDF").checked;
-  const exportPNG = document.getElementById("exportPNG").checked;
-  const addWatermark = document.getElementById("useWatermark").checked;
-  const watermarkText = document.getElementById("watermarkText").value || "Sample Watermark";
-  
-  if (!exportPDF && !exportPNG) {
-    showNotification("Please select at least one export format", "error");
-    return;
-  }
-  
-  // Get file name pattern
-  const bookTitle = document.getElementById("bookTitle").value.trim() || "ebook";
-  const authorName = document.getElementById("authorName").value.trim() || "unknown";
-  const fileNamePattern = document.getElementById("fileNamePattern").value || "{title}";
-  
-  const now = new Date();
-  const dateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-  
-  function formatFileName() {
-    return fileNamePattern
-      .replace(/{title}/g, bookTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
-      .replace(/{author}/g, authorName.toLowerCase().replace(/[^a-z0-9]+/g, '-'))
-      .replace(/{date}/g, dateStr);
-  }
-  
-  const baseFileName = formatFileName();
-  
-  if (exportPDF && exportPNG) {
-    exportBothFormatsZIP(baseFileName, addWatermark, watermarkText);
-  } else {
-    if (exportPDF) exportAsPDF(baseFileName);
-    if (exportPNG) exportAsPNG(baseFileName, addWatermark, watermarkText);
-  }
-}
-
-async function exportBothFormatsZIP(baseFileName, addWatermark, watermarkText) {
-  const zip = new JSZip();
-  const { jsPDF } = window.jspdf;
-  
-  // Create PDF
-  const pdfDoc = new jsPDF("p", "pt", "a4");
-  
-  // Process all pages including cover
-  const allPages = document.querySelectorAll(".page");
-  
-  for (let i = 0; i < allPages.length; i++) {
-    const page = allPages[i];
-    const canvas = await capturePageWithFooter(page);
-    const imgData = canvas.toDataURL('image/png');
-    
-    const width = pdfDoc.internal.pageSize.getWidth();
-    const height = (canvas.height * width) / canvas.width;
-    
-    if (i !== 0) pdfDoc.addPage();
-    pdfDoc.addImage(imgData, 'PNG', 0, 0, width, height);
-    
-    // Add to ZIP as individual PNG if needed
-    const pngCanvas = await processCanvasForExport(canvas, addWatermark, watermarkText);
-    const pngData = pngCanvas.toDataURL("image/png").replace(/^.*?,/, '');
-    zip.file(`${baseFileName}_page_${i+1}.png`, pngData, { base64: true });
-  }
-  
-  // Add PDF to ZIP
-  zip.file(`${baseFileName}.pdf`, pdfDoc.output("blob"), { binary: true });
-  
-  // Generate and download ZIP
-  const content = await zip.generateAsync({ type: "blob" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(content);
-  link.download = `${baseFileName}_ebook.zip`;
-  link.click();
-  
-  showNotification("Ebook exported successfully as ZIP (PDF + PNG)!");
-}
-
-async function exportAsPDF(baseFileName) {
-  const { jsPDF } = window.jspdf;
-  const pdfDoc = new jsPDF("p", "pt", "a4");
-  
-  // Process all pages including cover
-  const allPages = document.querySelectorAll(".page");
-  
-  for (let i = 0; i < allPages.length; i++) {
-    const page = allPages[i];
-    const canvas = await capturePageWithFooter(page);
-    const imgData = canvas.toDataURL('image/png');
-    
-    const width = pdfDoc.internal.pageSize.getWidth();
-    const height = (canvas.height * width) / canvas.width;
-    
-    if (i !== 0) pdfDoc.addPage();
-    pdfDoc.addImage(imgData, 'PNG', 0, 0, width, height);
-  }
-  
-  pdfDoc.save(`${baseFileName}.pdf`);
-  showNotification("PDF exported successfully with footer!");
-}
-
-async function exportAsPNG(baseFileName, addWatermark, watermarkText) {
-  const allPages = document.querySelectorAll(".page");
-  const zip = new JSZip();
-  
-  for (let i = 0; i < allPages.length; i++) {
-    const page = allPages[i];
-    const canvas = await capturePageWithFooter(page);
-    const processedCanvas = await processCanvasForExport(canvas, addWatermark, watermarkText);
-    const imgData = processedCanvas.toDataURL("image/png").replace(/^.*?,/, '');
-    
-    zip.file(`${baseFileName}_page_${i+1}.png`, imgData, { base64: true });
-  }
-  
-  const content = await zip.generateAsync({ type: "blob" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(content);
-  link.download = `${baseFileName}_pages.zip`;
-  link.click();
-  
-  showNotification("PNG pages exported successfully with footer!");
-}
-
-async function capturePageWithFooter(page) {
-  // Calculate the total height needed to capture the footer
-  const pageHeight = page.offsetHeight;
-  const footer = page.querySelector('.footer');
-  const footerHeight = footer ? footer.offsetHeight : 0;
-  const captureHeight = pageHeight + footerHeight + 20; // Add extra margin
-  
-  return await html2canvas(page, { 
-    scale: 2,
-    useCORS: true,
-    allowTaint: true,
-    windowHeight: captureHeight,
-    scrollY: 0,
-    onclone: (clonedDoc) => {
-      // Ensure all styles are properly cloned
-      const clonedPage = clonedDoc.querySelector('.page');
-      if (clonedPage) {
-        clonedPage.style.overflow = 'visible';
-        clonedPage.style.position = 'relative';
-      }
-    }
-  });
-}
-
-async function processCanvasForExport(canvas, addWatermark, watermarkText) {
-  if (!addWatermark) return canvas;
-  
-  const tempCanvas = document.createElement("canvas");
-  tempCanvas.width = canvas.width;
-  tempCanvas.height = canvas.height;
-  const ctx = tempCanvas.getContext("2d");
-  
-  // Draw original image
-  ctx.drawImage(canvas, 0, 0);
-  
-  // Add watermark
-  ctx.fillStyle = "rgba(0,0,0,0.1)";
-  ctx.font = "bold 60px Arial";
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  
-  // Calculate diagonal watermark
-  ctx.save();
-  ctx.translate(canvas.width/2, canvas.height/2);
-  ctx.rotate(-0.3); // 20 degree angle
-  
-  // Draw watermark text multiple times for better visibility
-  for (let y = -canvas.height; y < canvas.height*2; y += 200) {
-    for (let x = -canvas.width; x < canvas.width*2; x += 400) {
-      ctx.fillText(watermarkText, x, y);
-    }
-  }
-  ctx.restore();
-  
-  return tempCanvas;
-}
-
-// Close dropdown when clicking outside
-window.onclick = function(event) {
-  if (!event.target.matches('.dropdown-btn')) {
-    const dropdowns = document.getElementsByClassName("dropdown-content");
-    for (let i = 0; i < dropdowns.length; i++) {
-      const openDropdown = dropdowns[i];
-      if (openDropdown.classList.contains('show-dropdown')) {
-        openDropdown.classList.remove('show-dropdown');
-      }
-    }
-  }
-}
-  </script>
 </body>
 </html>
