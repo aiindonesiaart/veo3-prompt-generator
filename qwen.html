@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generator Prompt Veo 3</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script> 
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F3F4F6; 
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 2rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #D1D5DB;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #3B82F6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-primary {
+      background-color: #3B82F6;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #2563EB;
+    }
+
+    #generatedPrompt {
+      background-color: #F9FAFB;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      min-height: 150px;
+      white-space: pre-wrap;
+      border: 1px solid #E5E7EB;
+    }
+  </style>
+</head>
+<body class="font-sans text-gray-800">
+
+  <div class="container">
+    <header class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-blue-600">Veo 3 Video Prompt Generator</h1>
+      <p class="text-gray-600 mt-2">Buat prompt video sinematik dengan mudah dan cepat.</p>
+    </header>
+
+    <form id="promptForm" class="space-y-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1">Subjek</label>
+          <input type="text" id="subject" class="input-field" placeholder="Contoh: seorang petualang muda">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Aksi Utama</label>
+          <input type="text" id="mainAction" class="input-field" placeholder="Contoh: menjelajahi hutan mistis">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Emosi</label>
+          <input type="text" id="emotion" class="input-field" placeholder="Contoh: tegang dan penasaran">
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Lokasi</label>
+          <input type="text" id="location" class="input-field" placeholder="Contoh: pegunungan yang tertutup kabut">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-primary">Generate Prompt</button>
+    </form>
+
+    <div class="mt-6 card">
+      <h2 class="text-xl font-semibold mb-2">Hasil Prompt</h2>
+      <div id="generatedPrompt">Prompt akan muncul di sini...</div>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("promptForm");
+      const output = document.getElementById("generatedPrompt");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        generatePrompt();
+      });
+
+      function generatePrompt() {
+        const subject = document.getElementById("subject").value.trim() || "seorang tokoh";
+        const mainAction = document.getElementById("mainAction").value.trim() || "melakukan aksi";
+        const emotion = document.getElementById("emotion").value.trim() || "dengan emosi";
+        const location = document.getElementById("location").value.trim();
+
+        let prompt = `Buat video bergaya sinematik tentang ${subject} `;
+        prompt += `yang sedang ${mainAction} dengan emosi ${emotion}. `;
+        if (location) prompt += `Di lokasi ${location}. `;
+        prompt += `Gunakan pergerakan kamera dinamis dan sudut pengambilan gambar yang menarik.`;
+
+        output.textContent = prompt;
+      }
+
+      // Initial generation
+      generatePrompt();
+    });
+  </script>
+</body>
+</html>
