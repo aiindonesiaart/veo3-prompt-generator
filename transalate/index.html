@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Generator Prompt Veo 3</title>
+  <title>Veo 3 Video Prompt Generator</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="font-sans bg-gray-100 text-gray-800">
+<body class="bg-gradient-to-br from-blue-50 to-cyan-100 min-h-screen text-gray-800">
   <div class="container mx-auto px-4 py-8">
     <!-- Header -->
     <header class="text-center mb-10 animate-fade-in">
@@ -20,100 +20,57 @@
       <!-- Left Side - Input Fields -->
       <div class="lg:col-span-2 space-y-6">
         <!-- Section 1: Subjek & Aksi -->
-        <section class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="text-xl font-semibold flex items-center gap-2 text-blue-600 mb-4">
-            Detail Subjek dan Aksi
-          </h2>
+        <section class="card hover:shadow-lg transition-shadow">
+          <h2 class="section-title mb-4">Detail Subjek dan Aksi</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium mb-1">Subjek</label>
-              <input type="text" id="subject" class="input-field" placeholder="Contoh: seorang petualang muda">
+              <label class="block text-sm font-medium mb-1">Subjek / Subject</label>
+              <input type="text" id="subject" class="input-field" placeholder="e.g., seorang petualang muda / a young adventurer">
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">Aksi Utama</label>
-              <input type="text" id="mainAction" class="input-field" placeholder="Contoh: menjelajahi hutan mistis">
+              <label class="block text-sm font-medium mb-1">Aksi Utama / Main Action</label>
+              <input type="text" id="mainAction" class="input-field" placeholder="e.g., menjelajahi hutan mistis / exploring a mystical forest">
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">Emosi</label>
-              <input type="text" id="emotion" class="input-field" placeholder="Contoh: tegang dan penasaran">
+              <label class="block text-sm font-medium mb-1">Emosi / Emotion</label>
+              <input type="text" id="emotion" class="input-field" placeholder="e.g., tegang dan penasaran / tense and curious">
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">Lokasi</label>
-              <input type="text" id="location" class="input-field" placeholder="Contoh: pegunungan yang tertutup kabut">
+              <label class="block text-sm font-medium mb-1">Lokasi / Location</label>
+              <input type="text" id="location" class="input-field" placeholder="e.g., pegunungan yang tertutup kabut / misty mountain range">
             </div>
           </div>
         </section>
 
         <!-- Section 2: Gaya & Kamera -->
-        <section class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="text-xl font-semibold flex items-center gap-2 text-blue-600 mb-4">
-            Gaya dan Pergerakan Kamera
-          </h2>
+        <section class="card hover:shadow-lg transition-shadow">
+          <h2 class="section-title mb-4">Gaya dan Pergerakan Kamera / Style & Camera Movement</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium mb-1">Gaya</label>
+              <label class="block text-sm font-medium mb-1">Gaya / Style</label>
               <select id="style" class="input-field">
-                <option value="sinematik yang epik">Sinematik yang Epik</option>
-                <option value="dokumenter yang mendalam">Dokumenter yang Mendalam</option>
-                <option value="anime yang dinamis">Anime yang Dinamis</option>
-                <option value="kartun yang ceria">Kartun yang Ceria</option>
-                <option value="realistis yang natural">Realistis yang Natural</option>
+                <option value="sinematik yang epik / epic cinematic style">Sinematik yang Epik / Epic Cinematic Style</option>
+                <option value="dokumenter yang mendalam / deep documentary style">Dokumenter yang Mendalam / Deep Documentary Style</option>
+                <option value="anime yang dinamis / dynamic anime style">Anime yang Dinamis / Dynamic Anime Style</option>
+                <option value="kartun yang ceria / cheerful cartoon style">Kartun yang Ceria / Cheerful Cartoon Style</option>
+                <option value="realistis yang natural / natural realistic style">Realistis yang Natural / Natural Realistic Style</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium mb-1">Pergerakan Kamera</label>
+              <label class="block text-sm font-medium mb-1">Pergerakan Kamera / Camera Movement</label>
               <select id="cameraMovement" class="input-field">
-                <option value="tracking shot horizontal">Tracking Shot Horizontal</option>
-                <option value="zoom out dramatis">Zoom Out Dramatis</option>
-                <option value="rotasi 360 derajat">Rotasi 360 Derajat</option>
-                <option value="fly-through di udara">Fly-Through di Udara</option>
+                <option value="tracking shot horizontal / horizontal tracking shot">Tracking Shot Horizontal / Horizontal Tracking Shot</option>
+                <option value="zoom out dramatis / dramatic zoom out">Zoom Out Dramatis / Dramatic Zoom Out</option>
+                <option value="rotasi 360 derajat / 360-degree rotation">Rotasi 360 Derajat / 360-Degree Rotation</option>
+                <option value="fly-through di udara / aerial fly-through">Fly-Through di Udara / Aerial Fly-Through</option>
               </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Sudut Pengambilan Gambar</label>
-              <select id="cameraAngle" class="input-field">
-                <option value="low angle heroik">Low Angle Heroik</option>
-                <option value="high angle dramatis">High Angle Dramatis</option>
-                <option value="eye-level alami">Eye-Level Alami</option>
-                <option value="bird’s eye view">Bird’s Eye View</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Panjang Fokus Lensa</label>
-              <select id="focalLength" class="input-field">
-                <option value="wide-angle lebar">Wide-Angle Lebar</option>
-                <option value="telephoto zoom">Telephoto Zoom</option>
-                <option value="normal alami">Normal Alami</option>
-              </select>
-            </div>
-          </div>
-        </section>
-
-        <!-- Section 3: Parameter Teknis -->
-        <section class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow">
-          <h2 class="text-xl font-semibold flex items-center gap-2 text-blue-600 mb-4">
-            Parameter Teknis
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Kualitas Video</label>
-              <select id="videoQuality" class="input-field">
-                <option value="standar yang jernih">Standar yang Jernih</option>
-                <option value="hd yang tajam">HD yang Tajam</option>
-                <option value="4k yang ultra tajam">4K yang Ultra Tajam</option>
-                <option value="8k yang spektakuler">8K yang Spektakuler</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Durasi (detik)</label>
-              <input type="number" id="duration" class="input-field" min="10" max="360" value="60">
             </div>
           </div>
         </section>
 
         <!-- Translation Toggle -->
         <div class="flex items-center mt-4">
-          <label for="translateToggle" class="mr-3 text-gray-700">Terjemahkan ke Bahasa Inggris</label>
+          <label for="translateToggle" class="mr-3 text-gray-700">Terjemahkan ke Bahasa Inggris / Translate to English</label>
           <input type="checkbox" id="translateToggle" class="toggle-switch" />
         </div>
 
@@ -123,10 +80,10 @@
 
       <!-- Right Side - Output -->
       <div class="lg:col-span-1 sticky top-8">
-        <div class="bg-white p-6 rounded-xl shadow-md h-full">
+        <div class="card h-full">
           <h2 class="text-xl font-semibold mb-4">Hasil Prompt</h2>
-          <div id="generatedPrompt" class="min-h-[200px] bg-gray-50 p-4 rounded-md overflow-y-auto border border-gray-200 mb-4"></div>
-          <div id="translatedPrompt" class="hidden min-h-[200px] bg-gray-50 p-4 rounded-md overflow-y-auto border border-gray-200 mb-4"></div>
+          <div id="generatedPrompt" class="min-h-[200px] bg-gray-50 p-4 rounded-md border border-gray-200 mb-4"></div>
+          <div id="translatedPrompt" class="hidden min-h-[200px] bg-gray-50 p-4 rounded-md border border-gray-200 mb-4"></div>
           <button id="copyButton" class="mt-4 w-full btn-secondary">Salin ke Clipboard</button>
         </div>
       </div>
