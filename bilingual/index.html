@@ -1,25 +1,105 @@
-<!-- Right Side - Output -->
-<div class="lg:col-span-1 sticky top-8">
-  <div class="card h-full">
-    <h2 class="text-xl font-semibold mb-4">Hasil Prompt</h2>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Veo 3 Video Prompt Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-cyan-100 min-h-screen text-gray-800">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="text-center mb-10 animate-fade-in">
+      <h1 class="text-4xl font-bold text-blue-600">Veo 3 Video Prompt Generator</h1>
+      <p class="text-gray-600 mt-2">Buat prompt video sinematik dengan mudah dan cepat.</p>
+    </header>
 
-    <!-- Indonesian Prompt Box -->
-    <div id="generatedPrompt" class="min-h-[200px] bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
-      Prompt dalam Bahasa Indonesia akan muncul di sini...
-    </div>
+    <!-- Main Form -->
+    <form id="promptForm" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Left Side - Input Fields -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Section 1: Subjek & Aksi -->
+        <section class="card hover:shadow-lg transition-shadow">
+          <h2 class="section-title mb-4">Detail Subjek dan Aksi</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Subjek / Subject</label>
+              <input type="text" id="subject" class="input-field" placeholder="e.g., seorang petualang muda / a young adventurer">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Aksi Utama / Main Action</label>
+              <input type="text" id="mainAction" class="input-field" placeholder="e.g., menjelajahi hutan mistis / exploring a mystical forest">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Emosi / Emotion</label>
+              <input type="text" id="emotion" class="input-field" placeholder="e.g., tegang dan penasaran / tense and curious">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Lokasi / Location</label>
+              <input type="text" id="location" class="input-field" placeholder="e.g., pegunungan yang tertutup kabut / misty mountain range">
+            </div>
+          </div>
+        </section>
 
-    <!-- Translation Toggle -->
-    <div class="flex items-center mt-2 mb-4">
-      <input type="checkbox" id="translateToggle" class="toggle-switch mr-2" />
-      <label for="translateToggle" class="text-gray-700">Tampilkan terjemahan ke Bahasa Inggris</label>
-    </div>
+        <!-- Section 2: Gaya & Kamera -->
+        <section class="card hover:shadow-lg transition-shadow">
+          <h2 class="section-title mb-4">Gaya dan Pergerakan Kamera / Style & Camera Movement</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Gaya / Style</label>
+              <select id="style" class="input-field">
+                <option value="sinematik yang epik / epic cinematic style">Sinematik yang Epik / Epic Cinematic Style</option>
+                <option value="dokumenter yang mendalam / deep documentary style">Dokumenter yang Mendalam / Deep Documentary Style</option>
+                <option value="anime yang dinamis / dynamic anime style">Anime yang Dinamis / Dynamic Anime Style</option>
+                <option value="kartun yang ceria / cheerful cartoon style">Kartun yang Ceria / Cheerful Cartoon Style</option>
+                <option value="realistis yang natural / natural realistic style">Realistis yang Natural / Natural Realistic Style</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Pergerakan Kamera / Camera Movement</label>
+              <select id="cameraMovement" class="input-field">
+                <option value="tracking shot horizontal / horizontal tracking shot">Tracking Shot Horizontal / Horizontal Tracking Shot</option>
+                <option value="zoom out dramatis / dramatic zoom out">Zoom Out Dramatis / Dramatic Zoom Out</option>
+                <option value="rotasi 360 derajat / 360-degree rotation">Rotasi 360 Derajat / 360-Degree Rotation</option>
+                <option value="fly-through di udara / aerial fly-through">Fly-Through di Udara / Aerial Fly-Through</option>
+              </select>
+            </div>
+          </div>
+        </section>
 
-    <!-- English Prompt Box (Hidden by default) -->
-    <div id="translatedPrompt" class="hidden min-h-[200px] bg-gray-50 p-4 rounded-md border border-gray-200">
-      Translation in English will appear here...
-    </div>
+        <!-- Submit Button -->
+        <button type="submit" class="btn-primary w-full">Generate Prompt</button>
+      </div>
 
-    <!-- Copy Button -->
-    <button id="copyButton" class="mt-4 w-full btn-secondary">Salin ke Clipboard</button>
+      <!-- Right Side - Output -->
+      <div class="lg:col-span-1 sticky top-8">
+        <div class="card h-full">
+          <h2 class="text-xl font-semibold mb-4">Hasil Prompt</h2>
+
+          <!-- Indonesian Prompt Box -->
+          <div id="generatedPrompt" class="min-h-[200px] bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+            Prompt dalam Bahasa Indonesia akan muncul di sini...
+          </div>
+
+          <!-- Translation Toggle -->
+          <div class="flex items-center mt-2 mb-4">
+            <input type="checkbox" id="translateToggle" class="toggle-switch mr-2" />
+            <label for="translateToggle" class="text-gray-700">Tampilkan terjemahan ke Bahasa Inggris</label>
+          </div>
+
+          <!-- English Prompt Box (Hidden by default) -->
+          <div id="translatedPrompt" class="hidden min-h-[200px] bg-gray-50 p-4 rounded-md border border-gray-200 mb-4">
+            Translation in English will appear here...
+          </div>
+
+          <!-- Copy Button -->
+          <button id="copyButton" class="mt-4 w-full btn-secondary">Salin ke Clipboard</button>
+        </div>
+      </div>
+    </form>
   </div>
-</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
